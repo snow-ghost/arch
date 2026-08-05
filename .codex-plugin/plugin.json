@@ -1,0 +1,32 @@
+{
+  "name": "arch",
+  "version": "0.1.0",
+  "description": "Review generated and existing code for reuse, dependency health, architectural fit, and accidental complexity.",
+  "author": {
+    "name": "snow-ghost",
+    "url": "https://github.com/snow-ghost"
+  },
+  "homepage": "https://github.com/snow-ghost/arch",
+  "repository": "https://github.com/snow-ghost/arch",
+  "license": "MIT",
+  "keywords": [
+    "software-architecture",
+    "code-review",
+    "maintainability",
+    "dependencies",
+    "agent-skills"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Architecture Guard",
+    "shortDescription": "Keep generated code simple and maintainable.",
+    "longDescription": "Evidence-first architectural oversight for finding duplicated behavior, stale or deprecated dependencies, boundary violations, brittle workarounds, and unjustified complexity without forcing pattern-heavy rewrites.",
+    "developerName": "snow-ghost",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "Review this change for architectural and maintainability risks.",
+      "Prefer repository reuse and the smallest language-idiomatic design."
+    ]
+  }
+}

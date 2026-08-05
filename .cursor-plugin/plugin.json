@@ -1,0 +1,20 @@
+{
+  "name": "arch",
+  "displayName": "Architecture Guard",
+  "version": "0.1.0",
+  "description": "Review generated and existing code for reuse, dependency health, architectural fit, and accidental complexity.",
+  "author": {
+    "name": "snow-ghost",
+    "url": "https://github.com/snow-ghost"
+  },
+  "repository": "https://github.com/snow-ghost/arch",
+  "license": "MIT",
+  "keywords": [
+    "software-architecture",
+    "code-review",
+    "maintainability",
+    "dependencies",
+    "agent-skills"
+  ],
+  "skills": "./skills/"
+}

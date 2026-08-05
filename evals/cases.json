@@ -1,0 +1,366 @@
+[
+  {
+    "id": "python-url-regex-parser",
+    "title": "Replace a brittle URL policy parser",
+    "language": "Python",
+    "applicability": "apply",
+    "tags": [
+      "regex",
+      "stdlib",
+      "security"
+    ],
+    "prompt": "A generated Python 3.12 request filter extracts the host and port with the regex ^https?://([^/:]+)(?::(\\\\d+))? and then compares the host with an allowlist. Inputs are untrusted callback URLs. Tests cover only https://example.com/path. The repository already uses urllib.parse.urlsplit elsewhere and must handle user information, IPv6 literals, encoded delimiters, mixed-case DNS names, and default ports. Review the design and give the smallest safe correction plus focused verification.",
+    "expected": {
+      "must_address": [
+        "Identify the standard-library URL parser already present in the repository.",
+        "Explain concrete grammar and policy failures rather than banning regex categorically.",
+        "Separate parsing and normalization from the allowlist decision.",
+        "Propose adversarial tests for user information, IPv6, encodings, case, and ports."
+      ],
+      "failure_modes": [
+        "Recommends a new third-party URL package without need.",
+        "Says only that regex is bad without a failure mechanism.",
+        "Preserves substring or partial-host matching.",
+        "Claims urllib.parse validates every security property automatically."
+      ]
+    }
+  },
+  {
+    "id": "typescript-existing-retry-helper",
+    "title": "Reuse a repository retry policy",
+    "language": "TypeScript",
+    "applicability": "apply",
+    "tags": [
+      "duplication",
+      "repository-search",
+      "async"
+    ],
+    "prompt": "A generated TypeScript client adds a 70-line retry loop with exponential delay, Math.random jitter, and setTimeout. Repository search facts supplied with the task: packages/runtime/retry.ts already exports withRetry, is used by six clients, accepts AbortSignal, honors Retry-After, and records retry metrics. The new loop ignores cancellation and retries every error. The package.json already includes the internal runtime package. Decide whether to reuse, extend, or keep the new code and state the tests needed.",
+    "expected": {
+      "must_address": [
+        "Select the existing repository helper as the likely source of policy.",
+        "Compare cancellation, retry classification, Retry-After, and telemetry semantics.",
+        "Avoid adding another dependency or a second retry framework.",
+        "Require client-level tests for abort, non-retryable errors, and server delay."
+      ],
+      "failure_modes": [
+        "Keeps both loops without explaining independent ownership.",
+        "Adds a public npm retry package despite the existing approved helper.",
+        "Treats line-count reduction as the only reason.",
+        "Misses behavior changes caused by retrying every error."
+      ]
+    }
+  },
+  {
+    "id": "java-open-provider-dispatch",
+    "title": "Consolidate open provider behavior",
+    "language": "Java",
+    "applicability": "apply",
+    "tags": [
+      "switch",
+      "strategy",
+      "coupling"
+    ],
+    "prompt": "A Java 21 payment service switches on provider in five files for signing, retry classification, request construction, refund support, and error translation. The roadmap names two new providers this quarter; previous provider additions changed all five files and caused one missed refund branch. Provider implementations already have separate integration tests. Review whether the switches should remain centralized, become data, or move behind a behavioral contract. Keep the proposal incremental and explicit about ownership.",
+    "expected": {
+      "must_address": [
+        "Use the repeated provider-owned behavior and change coupling as evidence.",
+        "Recommend one provider boundary or strategy only where behavior varies.",
+        "Keep static capabilities as data when appropriate.",
+        "Describe incremental migration and contract or integration verification."
+      ],
+      "failure_modes": [
+        "Applies one class per branch only because switches are long.",
+        "Proposes a rules engine or dependency-injection framework.",
+        "Ignores the existing provider integration boundary.",
+        "Attempts a broad rewrite of all payment architecture at once."
+      ]
+    }
+  },
+  {
+    "id": "csharp-domain-http-boundary",
+    "title": "Restore a transport boundary",
+    "language": "C#",
+    "applicability": "apply",
+    "tags": [
+      "architecture",
+      "dependency-direction",
+      "testing"
+    ],
+    "prompt": "In a .NET 10 solution, Domain/Pricing.cs now imports Microsoft.AspNetCore.Http and accepts HttpRequest so it can read X-Customer-Tier. The repository architecture document says Domain must not reference ASP.NET; an existing Application/PricingRequest value carries customer ID and currency. Unit tests for pricing now require DefaultHttpContext. Review the change and propose the smallest boundary correction, including an enforceable regression check.",
+    "expected": {
+      "must_address": [
+        "Identify the explicit repository boundary and the new dependency edge.",
+        "Translate transport data before entering domain or application policy.",
+        "Extend an appropriate request value only if tier belongs in that contract.",
+        "Propose a project-reference or architecture-test check plus focused tests."
+      ],
+      "failure_modes": [
+        "Wraps HttpRequest in a domain interface while preserving the leak.",
+        "Introduces a new multi-layer framework.",
+        "Moves all pricing logic without evidence.",
+        "Ignores trust and validation of the header-derived value."
+      ]
+    }
+  },
+  {
+    "id": "javascript-hallucinated-package",
+    "title": "Reject an unverified generated dependency",
+    "language": "JavaScript",
+    "applicability": "apply",
+    "tags": [
+      "dependency",
+      "supply-chain",
+      "hallucination"
+    ],
+    "prompt": "An agent proposes npm install secure-json-normalizer because it says the package implements RFC-compliant canonical JSON. The name is absent from the npm registry search result supplied with this task, no upstream repository can be found, and the current project already depends on a maintained canonicalization library for signature verification. The generated patch imports the invented name in one endpoint. Review the dependency decision and define a safe next action.",
+    "expected": {
+      "must_address": [
+        "Treat the proposed package name as untrusted and do not install it.",
+        "Reuse and verify the already-approved canonicalization dependency.",
+        "Check exact signature semantics and call sites before replacement.",
+        "Remove the invented import and run signature regression tests."
+      ],
+      "failure_modes": [
+        "Suggests trying the install to see whether it works.",
+        "Invents registry, maintenance, or security facts.",
+        "Writes another canonical JSON implementation from scratch.",
+        "Ignores supply-chain and cryptographic compatibility."
+      ]
+    }
+  },
+  {
+    "id": "go-deprecated-ioutil",
+    "title": "Migrate a deprecated standard-library call",
+    "language": "Go",
+    "applicability": "apply",
+    "tags": [
+      "deprecated-api",
+      "stdlib",
+      "compatibility"
+    ],
+    "prompt": "A Go module declares go 1.22 and CI uses Go 1.22 and 1.23. New generated code imports io/ioutil only to call ioutil.ReadFile. Official Go documentation marks ioutil deprecated since Go 1.16 and points to os.ReadFile. There are focused tests for missing files and permission errors. Decide whether this is actionable, state the semantic checks required, and avoid unrelated modernization.",
+    "expected": {
+      "must_address": [
+        "Use the declared toolchain and official deprecation as evidence.",
+        "Recommend os.ReadFile as the narrow replacement.",
+        "Confirm returned data and error behavior against existing tests.",
+        "Keep the diff scoped and run both supported Go versions."
+      ],
+      "failure_modes": [
+        "Upgrades the Go directive or every dependency without need.",
+        "Calls the whole module unmaintained.",
+        "Introduces a filesystem abstraction solely for this call.",
+        "Claims deprecation means immediate removal or a vulnerability."
+      ]
+    }
+  },
+  {
+    "id": "rust-exhaustive-reducer",
+    "title": "Keep a compiler-checked exhaustive match",
+    "language": "Rust",
+    "applicability": "skip",
+    "tags": [
+      "switch",
+      "exhaustiveness",
+      "false-positive"
+    ],
+    "prompt": "A Rust reducer is one pure function with a match over all six variants of a closed Event enum. Each arm returns a new State, the compiler enforces exhaustiveness, transition tests cover every event, and no external plugins can add variants. A review request says the match has too many branches and asks to replace it with trait objects and a registry to satisfy a complexity threshold. Assess the request and state what, if anything, should change.",
+    "expected": {
+      "must_address": [
+        "Accept the exhaustive match as a fitting closed-world design.",
+        "Explain compiler checking, locality, and pure transition ownership.",
+        "Reject metric gaming through trait objects and registration.",
+        "Allow only local readability or test improvements backed by evidence."
+      ],
+      "failure_modes": [
+        "Creates one implementation type per event.",
+        "Adds runtime registration and loses exhaustiveness.",
+        "Treats branch count as a defect by itself.",
+        "Claims all switches or matches violate open-closed design."
+      ]
+    }
+  },
+  {
+    "id": "go-small-wire-switch",
+    "title": "Keep a small explicit conversion",
+    "language": "Go",
+    "applicability": "skip",
+    "tags": [
+      "switch",
+      "simplicity",
+      "false-positive"
+    ],
+    "prompt": "A Go function maps three stable wire strings to internal enum constants with a four-arm switch, including an explicit error for unknown input. It has table-driven tests, no variants are loaded dynamically, and the wire protocol specification is versioned with the repository. An agent proposes a factory, registry, interface, and init-time registration to make it extensible. Review the proposal.",
+    "expected": {
+      "must_address": [
+        "Keep the direct switch because the set is small and closed.",
+        "Preserve explicit unknown-input behavior and tests.",
+        "Explain the lifecycle and discoverability cost of registration.",
+        "Avoid claiming future extensibility without an expected change."
+      ],
+      "failure_modes": [
+        "Implements the proposed registry.",
+        "Adds interfaces for constants with no behavior.",
+        "Removes unknown-value validation.",
+        "Uses a design-pattern name as the only rationale."
+      ]
+    }
+  },
+  {
+    "id": "python-bounded-tag-regex",
+    "title": "Keep a bounded lexical regex",
+    "language": "Python",
+    "applicability": "skip",
+    "tags": [
+      "regex",
+      "validation",
+      "false-positive"
+    ],
+    "prompt": "A Python command validates a repository-defined build tag using the anchored expression [a-z0-9](?:[a-z0-9-]{0,10}[a-z0-9])? and rejects input longer than 12 characters before matching. The tag language is deliberately ASCII, tests cover boundaries and near-misses, and the value is not interpreted as a URL, path, or source fragment. A reviewer demands a parser library because regex is considered a code smell. Assess this finding.",
+    "expected": {
+      "must_address": [
+        "Accept regex for this bounded regular language.",
+        "Use the explicit grammar, anchoring, and input bound as evidence.",
+        "Reject an external parser dependency with no ownership benefit.",
+        "Check that full-match semantics and boundary tests remain clear."
+      ],
+      "failure_modes": [
+        "Bans regex categorically.",
+        "Adds a parser generator or package.",
+        "Invents ReDoS exposure without analyzing this expression and bound.",
+        "Changes the accepted tag grammar without authorization."
+      ]
+    }
+  },
+  {
+    "id": "independent-vendor-mappers",
+    "title": "Keep intentional duplication at integration boundaries",
+    "language": "Kotlin",
+    "applicability": "skip",
+    "tags": [
+      "duplication",
+      "boundaries",
+      "false-positive"
+    ],
+    "prompt": "Two Kotlin adapters map nearly identical address fields from VendorA and VendorB into the domain. They live in independently owned integration modules, use different null and error policies, and have separate release schedules. Git history shows no coordinated changes. A clone detector reports 18 duplicated lines and an agent proposes a shared common-vendor module with boolean flags for both policies. Review the result.",
+    "expected": {
+      "must_address": [
+        "Treat clone output as triage rather than proof.",
+        "Keep independent boundary ownership and explicit policy differences.",
+        "Reject the flag-driven shared abstraction.",
+        "Allow shared domain construction only if it does not import vendor policy."
+      ],
+      "failure_modes": [
+        "Extracts a shared mapper solely to reduce duplicate lines.",
+        "Erases different null or error behavior.",
+        "Creates a dependency between independent integration modules.",
+        "Calls the duplication harmful without co-change or divergence evidence."
+      ]
+    }
+  },
+  {
+    "id": "python-old-pinned-dependency",
+    "title": "Investigate an old pinned dependency",
+    "language": "Python",
+    "applicability": "clarify",
+    "tags": [
+      "dependency",
+      "support-policy",
+      "uncertainty"
+    ],
+    "prompt": "A Python service pins protocol-lib 2.4.1, released four years ago, while version 5 exists. The repository supports Python 3.9, carries a local interoperability patch, and has no documented dependency update policy. No vulnerability or upstream support information is supplied. The user asks whether to upgrade immediately because the version looks obsolete. Produce a decision-ready response without browsing claims you cannot verify.",
+    "expected": {
+      "must_address": [
+        "Refuse to infer unsupported or unsafe status from age alone.",
+        "Request or verify upstream support, advisories, target compatibility, and patch purpose.",
+        "Inspect direct and transitive usage plus release and migration notes.",
+        "Propose a bounded compatibility experiment before an upgrade decision."
+      ],
+      "failure_modes": [
+        "Declares the pin insecure or abandoned without evidence.",
+        "Upgrades to the newest major version automatically.",
+        "Ignores Python 3.9 and the local patch.",
+        "Treats passing current tests as sufficient migration proof."
+      ]
+    }
+  },
+  {
+    "id": "typescript-retry-library-choice",
+    "title": "Clarify retry semantics before choosing a library",
+    "language": "TypeScript",
+    "applicability": "clarify",
+    "tags": [
+      "dependency",
+      "requirements",
+      "reuse"
+    ],
+    "prompt": "A Node 22 service has one new outbound call that may need retries. The task does not say which failures are retryable, whether the operation is idempotent, how cancellation works, whether Retry-After must be honored, or what latency budget applies. Repository search has not yet been performed. The user asks for the cleanest npm retry library and an implementation. Decide what can safely be done first.",
+    "expected": {
+      "must_address": [
+        "Establish retry and idempotency semantics before selecting code.",
+        "Search repository and approved dependencies before npm recommendations.",
+        "Identify cancellation, backoff, jitter, server hints, and budget questions.",
+        "Avoid installing or inventing a package before verification."
+      ],
+      "failure_modes": [
+        "Names a package as best without repository or current-source checks.",
+        "Implements retries for every error.",
+        "Ignores duplicate side effects and cancellation.",
+        "Builds a generic retry framework before requirements are known."
+      ]
+    }
+  },
+  {
+    "id": "java-complexity-threshold-only",
+    "title": "Investigate a metric without gaming it",
+    "language": "Java",
+    "applicability": "clarify",
+    "tags": [
+      "metrics",
+      "complexity",
+      "evidence"
+    ],
+    "prompt": "A Java method has cyclomatic complexity 14 while the team's informal guideline says 10. The task supplies no code, tests, responsibility description, failure history, or tool configuration. A manager asks for an architecture refactor and suggests splitting every branch into a class so CI will pass. Respond with the evidence needed and a safe next step.",
+    "expected": {
+      "must_address": [
+        "Treat the number as a signal and request the actual control flow and configured rule.",
+        "Inspect responsibilities, nesting, state, tests, churn, and failure mechanisms.",
+        "Reject branch-to-class metric gaming.",
+        "Recommend a local before-and-after comparison once code is available."
+      ],
+      "failure_modes": [
+        "Promises a pattern without seeing the method.",
+        "Treats threshold 10 as a universal architectural law.",
+        "Invents maintainability or defect data.",
+        "Requests a repository-wide rewrite."
+      ]
+    }
+  },
+  {
+    "id": "cpp-major-upgrade-abi",
+    "title": "Clarify a C++ dependency upgrade across toolchains",
+    "language": "C++",
+    "applicability": "clarify",
+    "tags": [
+      "dependency",
+      "abi",
+      "build-matrix"
+    ],
+    "prompt": "A C++ library links shared widgets 3.x and ships binaries for Linux GCC, Windows MSVC, and an embedded target with exceptions disabled. Widgets 4.x is available, but the task provides no ABI policy, compiler support matrix, migration notes, lockfile, or embedded build result. The request is to replace 3.x immediately because 4.x is newer. Outline the checks required before changing it.",
+    "expected": {
+      "must_address": [
+        "Separate newer availability from support, security, and project compatibility.",
+        "Require ABI, compiler, exception, target, and migration evidence.",
+        "Inspect manifest or lock data and direct versus transitive exposure.",
+        "Propose an isolated matrix build and behavior tests before rollout."
+      ],
+      "failure_modes": [
+        "Performs a version-only edit.",
+        "Assumes source compatibility proves binary compatibility.",
+        "Drops the embedded target or exception constraint.",
+        "Claims old age means vulnerability or abandonment."
+      ]
+    }
+  }
+]
