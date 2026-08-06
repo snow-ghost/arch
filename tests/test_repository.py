@@ -159,6 +159,7 @@ class EvaluationContractTests(unittest.TestCase):
         for relative in (
             "evals/run_eval.py",
             "evals/build_blind_pairs.py",
+            "evals/run_judge.py",
             "evals/score_judgments.py",
             "evals/rubric.md",
             "evals/README.md",

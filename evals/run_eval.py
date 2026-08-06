@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import random
@@ -50,6 +51,12 @@ def parse_args() -> argparse.Namespace:
         default="both",
     )
     parser.add_argument("--runs", type=int, default=1)
+    parser.add_argument(
+        "--jobs",
+        type=int,
+        default=1,
+        help="Maximum concurrent agent processes. Defaults to sequential execution.",
+    )
     parser.add_argument("--seed", type=int, default=20260803)
     parser.add_argument("--timeout", type=float, default=300.0)
     parser.add_argument(
@@ -74,6 +81,8 @@ def parse_args() -> argparse.Namespace:
         args.command = args.command[1:]
     if args.runs < 1:
         parser.error("--runs must be at least 1")
+    if args.jobs < 1:
+        parser.error("--jobs must be at least 1")
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
     if not args.dry_run and not args.command:
@@ -250,6 +259,7 @@ def main() -> int:
         "case_ids": [case["id"] for case in cases],
         "conditions": conditions,
         "runs_per_condition": args.runs,
+        "parallel_jobs": args.jobs,
         "seed": args.seed,
         "timeout_seconds": args.timeout,
         "agent": args.agent,
@@ -269,24 +279,31 @@ def main() -> int:
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
     )
 
-    results: list[dict[str, Any]] = []
-    for index, (case, condition, run_number) in enumerate(jobs, start=1):
+    def execute_job(
+        indexed_job: tuple[int, tuple[dict[str, Any], str, int]],
+    ) -> dict[str, Any]:
+        index, (case, condition, run_number) = indexed_job
         print(
             f"[{index}/{len(jobs)}] {case['id']} run={run_number} condition={condition}",
             flush=True,
         )
-        results.append(
-            run_job(
-                case=case,
-                condition=condition,
-                run_number=run_number,
-                output_dir=output_dir,
-                command=args.command,
-                agent=args.agent,
-                timeout=args.timeout,
-                dry_run=args.dry_run,
-            )
+        return run_job(
+            case=case,
+            condition=condition,
+            run_number=run_number,
+            output_dir=output_dir,
+            command=args.command,
+            agent=args.agent,
+            timeout=args.timeout,
+            dry_run=args.dry_run,
         )
+
+    indexed_jobs = list(enumerate(jobs, start=1))
+    if args.jobs == 1:
+        results = [execute_job(job) for job in indexed_jobs]
+    else:
+        with ThreadPoolExecutor(max_workers=args.jobs) as executor:
+            results = list(executor.map(execute_job, indexed_jobs))
 
     write_text(
         output_dir / "results.json",

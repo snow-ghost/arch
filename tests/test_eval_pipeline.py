@@ -34,6 +34,7 @@ class EvaluationPipelineTests(unittest.TestCase):
             manifest = json.loads((output / "manifest.json").read_text("utf-8"))
             self.assertEqual(manifest["conditions"], ["baseline", "arch"])
             self.assertEqual(manifest["case_ids"], ["go-small-wire-switch"])
+            self.assertEqual(manifest["parallel_jobs"], 1)
             self.assertRegex(manifest["skill_sha256"], r"^[0-9a-f]{64}$")
             results = json.loads((output / "results.json").read_text("utf-8"))
             self.assertEqual(len(results), 2)
@@ -75,21 +76,53 @@ class EvaluationPipelineTests(unittest.TestCase):
             )
             self.assertEqual(blind.returncode, 0, blind.stderr)
             blind_dir = run_dir / "blind"
-            template = json.loads(
-                (blind_dir / "judgments-template.json").read_text("utf-8")
-            )
-            for judgment in template["judgments"].values():
-                for label in ("A", "B"):
-                    for dimension in template["dimensions"]:
-                        judgment["scores"][label][dimension] = 2
-                    judgment["architecture_theater"][label] = 0
-                judgment["winner"] = "tie"
-                judgment["reason"] = "Pipeline fixture."
-            judgments = blind_dir / "judgments.json"
-            judgments.write_text(
-                json.dumps(template, indent=2) + "\n",
+            dimensions = [
+                "evidence_and_repository_grounding",
+                "reuse_and_dependency_accuracy",
+                "architectural_fit",
+                "simplicity_and_maintainability",
+                "language_and_api_accuracy",
+                "verification_and_migration_safety",
+                "clarity_and_actionability",
+            ]
+            scores = {dimension: 2 for dimension in dimensions}
+            fixture = {
+                "scores": {"A": scores, "B": scores},
+                "architecture_theater": {"A": 0, "B": 0},
+                "critical_errors": {"A": [], "B": []},
+                "winner": "tie",
+                "reason": "Pipeline fixture.",
+            }
+            judge_program = Path(temporary) / "judge.py"
+            judge_program.write_text(
+                "import json\n" + f"print(json.dumps({fixture!r}))\n",
                 encoding="utf-8",
             )
+            judge = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "evals" / "run_judge.py"),
+                    "--jobs",
+                    "2",
+                    str(blind_dir),
+                    "--",
+                    sys.executable,
+                    str(judge_program),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(judge.returncode, 0, judge.stderr)
+            judge_manifest = json.loads(
+                (blind_dir / "judge-manifest.json").read_text("utf-8")
+            )
+            self.assertEqual(judge_manifest["parallel_jobs"], 2)
+            judge_results = json.loads(
+                (blind_dir / "judge-results.json").read_text("utf-8")
+            )
+            self.assertEqual({item["status"] for item in judge_results}, {"ok"})
 
             score = subprocess.run(
                 [

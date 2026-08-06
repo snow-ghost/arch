@@ -47,10 +47,11 @@ The command after -- must read the prompt from standard input and write the answ
 
     python3 evals/run_eval.py \
       --runs 3 \
+      --jobs 2 \
       --agent codex \
       -- codex exec --sandbox read-only --skip-git-repo-check -
 
-The runner randomizes job order. Every job gets a fresh temporary project. The arch condition receives a project-local copy of skills/arch at the selected agent path; the baseline does not.
+The runner randomizes job order. Every job gets a fresh temporary project. The arch condition receives a project-local copy of skills/arch at the selected agent path; the baseline does not. The --jobs option bounds concurrent agent processes; start with one or two to avoid rate-limit and load artifacts.
 
 Supported install layouts are Codex, Claude Code, Cursor, and OpenCode. The harness does not hide the caller's user-level agent profile because it may contain authentication. Audit globally installed skills and instructions before interpreting results, or use a clean profile.
 
@@ -68,12 +69,23 @@ The command randomizes baseline and arch as A or B for every pair, writes anonym
 - blind/judgments-template.json;
 - blind/pairs/PAIR_ID/judge-prompt.md.
 
-Copy and fill the template:
+Run an automated judge whose command reads stdin and returns the required JSON object. Runner options must precede blind_dir:
+
+    python3 evals/run_judge.py \
+      --jobs 2 \
+      --timeout 600 \
+      evals/runs/RUN_ID/blind \
+      -- claude --print --model opus --effort max \
+        --output-format json --no-session-persistence --disable-slash-commands
+
+run_judge.py accepts raw rubric JSON or a JSON wrapper whose result field contains it. It writes the exact command, per-pair stdout, stderr, timing, validated judgments, and failure metadata.
+
+For manual judging, copy and fill the template:
 
     cp evals/runs/RUN_ID/blind/judgments-template.json \
       evals/runs/RUN_ID/blind/judgments.json
 
-A judge can read each judge-prompt.md and return the required JSON object. Use a judge that has not seen key.json. Human review is preferred for ambiguous architecture trade-offs; an LLM judge should be identified and spot-checked.
+Use a judge that has not seen key.json. Human review is preferred for ambiguous architecture trade-offs; an LLM judge should be identified, its resolved model recorded from raw metadata, and a sample of judgments spot-checked. Audit its user-level profile because run_judge.py isolates the working directory but retains authentication settings.
 
 ## Score
 
