@@ -2,7 +2,7 @@
 
 The harness measures whether the local arch skill improves architecture decisions over the same agent without the skill. It does not treat skill activation or longer answers as success.
 
-Version 0.1 includes the harness and cases. No general quality lift is claimed until a named model, command, sample size, judge, and run artifact are published.
+Version 0.1 includes the harness and cases. The first fully specified run found no aggregate quality lift; see [the 6 August 2026 report](../docs/benchmark-2026-08-06.md). Future claims still require a named model, command, sample size, judge, and run artifact.
 
 ## What the cases test
 
@@ -93,7 +93,7 @@ After all fields are complete:
 
     python3 evals/score_judgments.py evals/runs/RUN_ID/blind
 
-The summary reports adjusted dimension scores, paired arch-minus-baseline deltas, preferences, critical-error counts, and judge notes.
+The summary reports adjusted dimension scores, paired arch-minus-baseline deltas, route-level results, preferences, architecture-theater penalties, critical-error counts, and judge notes.
 
 Do not report only an aggregate mean. Include:
 

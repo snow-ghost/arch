@@ -10,11 +10,16 @@ from pathlib import Path
 from typing import Any
 
 
+ROOT = Path(__file__).resolve().parents[1]
+ROUTES = ("apply", "skip", "clarify")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("blind_dir", type=Path)
     parser.add_argument("--judgments", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--cases", type=Path, default=ROOT / "evals" / "cases.json")
     return parser.parse_args()
 
 
@@ -30,6 +35,15 @@ def checked_score(value: Any, *, pair_id: str, label: str, dimension: str) -> in
     return value
 
 
+def case_route(pair_id: str, cases: dict[str, str]) -> str:
+    matches = [
+        route for case_id, route in cases.items() if pair_id.startswith(f"{case_id}--")
+    ]
+    if len(matches) != 1:
+        raise SystemExit(f"{pair_id}: cannot resolve exactly one case route")
+    return matches[0]
+
+
 def main() -> int:
     args = parse_args()
     blind_dir = args.blind_dir.resolve()
@@ -41,6 +55,17 @@ def main() -> int:
         )
     key = load_json(blind_dir / "key.json")
     document = load_json(judgments_path)
+    cases_document = load_json(args.cases.resolve())
+    cases = {
+        case["id"]: case["applicability"]
+        for case in cases_document
+        if isinstance(case, dict)
+        and isinstance(case.get("id"), str)
+        and case.get("applicability") in ROUTES
+    }
+    if not cases:
+        raise SystemExit("cases file has no valid applicability routes")
+
     dimensions = document.get("dimensions")
     judgments = document.get("judgments")
     if not isinstance(dimensions, list) or not dimensions:
@@ -52,6 +77,11 @@ def main() -> int:
     condition_wins = {"baseline": 0, "arch": 0, "tie": 0}
     scores_by_condition: dict[str, list[int]] = {"baseline": [], "arch": []}
     critical_by_condition = {"baseline": 0, "arch": 0}
+    theater_by_condition = {"baseline": 0, "arch": 0}
+    dimension_by_condition = {
+        condition: {dimension: [] for dimension in dimensions}
+        for condition in ("baseline", "arch")
+    }
 
     for pair_id, mapping in key["mappings"].items():
         if pair_id not in judgments:
@@ -60,15 +90,16 @@ def main() -> int:
         adjusted: dict[str, int] = {}
         for label in ("A", "B"):
             values = judgment.get("scores", {}).get(label, {})
-            raw = sum(
-                checked_score(
+            dimension_values = {
+                dimension: checked_score(
                     values.get(dimension),
                     pair_id=pair_id,
                     label=label,
                     dimension=dimension,
                 )
                 for dimension in dimensions
-            )
+            }
+            raw = sum(dimension_values.values())
             penalty = judgment.get("architecture_theater", {}).get(label)
             if (
                 not isinstance(penalty, int)
@@ -79,6 +110,9 @@ def main() -> int:
             adjusted[label] = raw - penalty
             condition = mapping[label]
             scores_by_condition[condition].append(adjusted[label])
+            theater_by_condition[condition] += penalty
+            for dimension, score in dimension_values.items():
+                dimension_by_condition[condition][dimension].append(score)
             errors = judgment.get("critical_errors", {}).get(label, [])
             if not isinstance(errors, list):
                 raise SystemExit(f"{pair_id}: {label} critical_errors must be an array")
@@ -93,6 +127,7 @@ def main() -> int:
         rows.append(
             {
                 "pair_id": pair_id,
+                "route": case_route(pair_id, cases),
                 "baseline": by_condition["baseline"],
                 "arch": by_condition["arch"],
                 "delta": by_condition["arch"] - by_condition["baseline"],
@@ -116,16 +151,64 @@ def main() -> int:
         ),
         f"| Preference wins | {condition_wins['baseline']} | {condition_wins['arch']} |",
         f"| Critical errors | {critical_by_condition['baseline']} | {critical_by_condition['arch']} |",
+        f"| Architecture-theater penalties | {theater_by_condition['baseline']} | {theater_by_condition['arch']} |",
         "",
         f"Ties: {condition_wins['tie']}. Mean paired Architecture Guard - baseline delta: {statistics.fmean(deltas):+.2f}.",
         "",
-        "| Pair | Baseline | Architecture Guard | Delta | Preferred |",
-        "|---|---:|---:|---:|---|",
+        "## Scores by route",
+        "",
+        "| Route | Pairs | Baseline mean | Architecture Guard mean | Delta | Baseline wins | Architecture Guard wins | Ties |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
+    for route in ROUTES:
+        selected = [row for row in rows if row["route"] == route]
+        if not selected:
+            continue
+        route_wins = {
+            condition: sum(row["winner"] == condition for row in selected)
+            for condition in ("baseline", "arch", "tie")
+        }
+        baseline_mean = statistics.fmean(row["baseline"] for row in selected)
+        arch_mean = statistics.fmean(row["arch"] for row in selected)
+        lines.append(
+            f"| {route} | {len(selected)} | {baseline_mean:.2f} | "
+            f"{arch_mean:.2f} | {arch_mean - baseline_mean:+.2f} | "
+            f"{route_wins['baseline']} | {route_wins['arch']} | "
+            f"{route_wins['tie']} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Dimension means",
+            "",
+            "| Dimension | Baseline | Architecture Guard | Delta |",
+            "|---|---:|---:|---:|",
+        ]
+    )
+    for dimension in dimensions:
+        baseline_mean = statistics.fmean(
+            dimension_by_condition["baseline"][dimension]
+        )
+        arch_mean = statistics.fmean(dimension_by_condition["arch"][dimension])
+        lines.append(
+            f"| {dimension} | {baseline_mean:.2f} | {arch_mean:.2f} | "
+            f"{arch_mean - baseline_mean:+.2f} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Pair scores",
+            "",
+            "| Pair | Route | Baseline | Architecture Guard | Delta | Preferred |",
+            "|---|---|---:|---:|---:|---|",
+        ]
+    )
     for row in rows:
         lines.append(
-            f"| {row['pair_id']} | {row['baseline']} | {row['arch']} | "
-            f"{row['delta']:+d} | {row['winner']} |"
+            f"| {row['pair_id']} | {row['route']} | {row['baseline']} | "
+            f"{row['arch']} | {row['delta']:+d} | {row['winner']} |"
         )
     lines.extend(["", "## Judge notes", ""])
     for row in rows:

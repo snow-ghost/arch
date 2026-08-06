@@ -138,6 +138,9 @@ class EvaluationPipelineTests(unittest.TestCase):
             self.assertEqual(score.returncode, 0, score.stderr)
             summary = (blind_dir / "summary.md").read_text("utf-8")
             self.assertIn("Mean paired Architecture Guard - baseline delta: +0.00", summary)
+            self.assertIn("## Scores by route", summary)
+            self.assertIn("| skip | 1 |", summary)
+            self.assertIn("## Dimension means", summary)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ Agent Skill для архитектурного надзора над сгене
 
 Один пакет поддерживает Codex, Claude Code, Cursor и OpenCode. Каноническая реализация хранится в skills/arch; продуктовые манифесты содержат только метаданные и ссылку на этот каталог.
 
-Статус: версия 0.1 — исследовательский прототип. Методика, тесты и парный eval harness реализованы. Общий прирост качества пока не измерен; любой будущий результат должен указывать модель, команду, набор кейсов, число повторов, judge и commit.
+Статус: версия 0.1 — исследовательский прототип. Методика, тесты и парный eval harness реализованы. Первый зафиксированный прогон на Codex gpt-5.6-sol не показал общего прироста: средняя парная дельта составила +0,00, arch выиграл 13 сравнений, baseline — 10, ещё 19 завершились ничьей. Результат и ограничения описаны в [отчёте от 6 августа 2026 года](docs/benchmark-2026-08-06.md).
 
 ## Что проверяет скилл
 
@@ -136,12 +136,12 @@ python3 evals/run_eval.py \
   -- codex exec --sandbox read-only --skip-git-repo-check -
 ~~~
 
-Ослепить пары и подготовить шаблон оценок:
+Ослепить пары, запустить judge и посчитать результат:
 
 ~~~sh
 python3 evals/build_blind_pairs.py evals/runs/RUN_ID
-cp evals/runs/RUN_ID/blind/judgments-template.json \
-  evals/runs/RUN_ID/blind/judgments.json
+python3 evals/run_judge.py --jobs 2 evals/runs/RUN_ID/blind \
+  -- JUDGE_COMMAND
 python3 evals/score_judgments.py evals/runs/RUN_ID/blind
 ~~~
 
@@ -154,6 +154,7 @@ Runner создаёт отдельный временный project для ка�
 - [Исследование](docs/research.md)
 - [План и границы версии 0.1](docs/plan.md)
 - [Методика и результаты оценки](docs/evaluation.md)
+- [Первый поведенческий benchmark](docs/benchmark-2026-08-06.md)
 - [Аннотированные первичные источники](skills/arch/references/sources.md)
 
 ## Лицензия
