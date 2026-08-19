@@ -2,7 +2,7 @@
 
 The harness measures whether the local arch skill improves architecture decisions over the same agent without the skill. It does not treat skill activation or longer answers as success.
 
-The current suite contains 18 cases. The first fully specified run used the original 14-case suite and found no aggregate quality lift; see [the 6 August 2026 report](../docs/benchmark-2026-08-06.md). The four architecture-view cases and the expanded rubric have not received a behavioral run. Future claims still require a named model, command, sample size, judge, and run artifact.
+The current suite contains 18 cases. A fully specified run of the current eight-dimension suite found no aggregate quality lift: +0.04 mean paired delta, with 12 arch wins, 14 baseline wins, and 28 ties. The four architecture-view cases scored +0.67, while the pre-existing 14 cases scored -0.14. Cases and skill were developed against the visible suite, so this is a tuning result rather than independent validation; see [the 19 August 2026 report](../docs/benchmark-2026-08-19.md). The original 14-case run is documented in [the 6 August 2026 report](../docs/benchmark-2026-08-06.md). Future claims still require a named model, command, sample size, judge, and run artifact.
 
 ## What the cases test
 

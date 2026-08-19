@@ -140,4 +140,4 @@ Regex подходит для ограниченного regular language. Neste
 - current-documentation step уменьшает ошибки по deprecated API и dependency migration;
 - штраф architecture_theater снижает лишние layers без ухудшения correctness.
 
-Eval сравнивает arch с baseline на одинаковых prompts. До поведенческого прогона гипотезы остаются гипотезами.
+Eval сравнивает arch с baseline на одинаковых prompts. Проведённые прогоны проверяют гипотезы только на открытом синтетическом наборе; скрытый набор и независимая человеческая оценка отсутствуют.
