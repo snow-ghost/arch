@@ -469,5 +469,86 @@
         "Marks speculative dispatch relationships as observed."
       ]
     }
+  },
+  {
+    "id": "java-minor-release-layer-regression",
+    "title": "Detect a layer regression between minor releases",
+    "language": "Java",
+    "applicability": "apply",
+    "tags": [
+      "architecture-comparison",
+      "conformance",
+      "dependency-boundary",
+      "java"
+    ],
+    "prompt": "Compare release/1.4 at commit 31a6d82 with release/1.5 at commit b71c940 endpoint to endpoint. Both use Java 21, the same Gradle dependency lock, and the same pinned ArchUnit version and configuration. At component zoom, 1.4 routes presentation through Application/CheckoutService and a domain repository port to Persistence/JpaOrderRepository. In 1.5, ui/AdminOrderController.java directly imports and calls JpaOrderRepository; ADR-004 and an existing ArchUnit rule forbid presentation-to-persistence dependencies. Report the architectural delta and conformance status, then give the smallest correction and focused verification. Do not infer a score from file churn.",
+    "expected": {
+      "must_address": [
+        "Record or verify the supplied immutable endpoints, endpoint semantics, Java target, scope, zoom, and comparable analyzer configuration.",
+        "Map stable logical components and identify the added presentation-to-persistence dependency with evidence from both snapshots.",
+        "Classify the change as Material at component zoom and the explicit forbidden edge as a Demonstrated regression, without turning breadth into severity.",
+        "Recommend routing the controller through the existing application boundary and run the focused ArchUnit and behavior tests on the target."
+      ],
+      "failure_modes": [
+        "Calls every changed file architectural drift or emits an unsupported degradation percentage.",
+        "Uses different aggregation or analyzer settings for the two snapshots without disclosure.",
+        "Misses the ADR and enforceable forbidden dependency rule.",
+        "Proposes a broad layer or framework rewrite instead of the smallest boundary correction."
+      ]
+    }
+  },
+  {
+    "id": "typescript-release-package-rename",
+    "title": "Reject file churn as architecture degradation",
+    "language": "TypeScript",
+    "applicability": "skip",
+    "tags": [
+      "architecture-comparison",
+      "rename",
+      "false-positive",
+      "typescript"
+    ],
+    "prompt": "Compare v2.3.1 at commit 804ef13 with v2.4.0 at commit af4bc25 endpoint to endpoint on Node 22. Git rename detection reports 120 files moved from packages/billing to packages/payments. The public package exports, CODEOWNERS owner, runtime deployment boundary, and contract tests are supplied as identical; the same pinned dependency-cruiser version and configuration reports the logical graph as identical after mapping the old and new paths to logical component Payments. A dashboard request proposes calling the release 60% architecturally worse because 60% of files moved. Assess the comparison and state the useful result.",
+    "expected": {
+      "must_address": [
+        "Use the immutable endpoints, same runtime, endpoint semantics, and same component-level analyzer contract.",
+        "Map the renamed paths to one stable Payments logical component using exports, ownership, deployment, tests, and rename evidence.",
+        "Classify the change scale as None and report no demonstrated conformance regression in the supplied scope.",
+        "Reject the 60% degradation claim because changed-file proportion measures physical churn rather than logical architecture quality."
+      ],
+      "failure_modes": [
+        "Counts every moved file as a removed and added architectural component.",
+        "Calls the rename drift without an intended-architecture mismatch.",
+        "Invents runtime, contract, ownership, or dependency changes.",
+        "Recommends reversing the rename solely to reduce the metric."
+      ]
+    }
+  },
+  {
+    "id": "python-release-dynamic-plugin-delta",
+    "title": "Keep a dynamic plugin comparison explicitly incomplete",
+    "language": "Python",
+    "applicability": "clarify",
+    "tags": [
+      "architecture-comparison",
+      "dynamic-dispatch",
+      "partial-graph",
+      "uncertainty"
+    ],
+    "prompt": "Compare Python 3.11 plugin service tags v3.6.2 at commit 68ac10e and v3.7.0 at commit c21d947 endpoint to endpoint. Static diffs show that registry loader configuration keys and plugin package entry points changed. Handlers are discovered from a generated manifest at build time, but neither version's generated manifest, deployment configuration, nor representative runtime trace is available. The repository supplies no ADR, required dependency model, or approved architecture constraints. The user asks for an exact architecture drift percentage and every changed runtime edge. Produce the safe comparison now and identify what is needed next.",
+    "expected": {
+      "must_address": [
+        "Record the fixed snapshots and produce only the observed configuration and registry-loader delta at one declared zoom.",
+        "Keep generated and runtime plugin edges unresolved and classify the overall change scale as Unknown when those edges determine the result.",
+        "Mark conformance Not assessed because no authoritative intended architecture or enforceable constraint is supplied.",
+        "Request both generated manifests or reproducible builds, deployment configuration, representative traces, and architecture intent before exact edge or drift claims."
+      ],
+      "failure_modes": [
+        "Invents plugin handlers or runtime edges from entry-point names.",
+        "Reports an exact degradation percentage despite unresolved mapping and absent intent.",
+        "Calls any configuration-key change a demonstrated architecture regression.",
+        "Refuses all progress instead of reporting the verified partial delta and unknowns."
+      ]
+    }
   }
 ]

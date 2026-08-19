@@ -10,6 +10,7 @@ This bibliography records the evidence behind the workflow. It is not a universa
 - [Security evidence is context-dependent](#security-evidence-is-context-dependent)
 - [Duplication and code smells](#duplication-and-code-smells)
 - [Patterns and architectural complexity](#patterns-and-architectural-complexity)
+- [Architecture evolution, conformance, and drift](#architecture-evolution-conformance-and-drift)
 - [Regex and parser safety](#regex-and-parser-safety)
 - [Skill effectiveness](#skill-effectiveness)
 - [Official tool references](#official-tool-references)
@@ -131,6 +132,38 @@ Use: compare patterns against direct designs and require a current variation or 
 - Dependency-cycle untangling: https://arxiv.org/abs/2306.10599
 - Architectural complexity at Google: https://research.google/pubs/understanding-architectural-complexity-maintenance-burden-and-developer-sentiment-a-large-scale-study/
 - Refactoring catalog example: https://refactoring.com/catalog/replaceConditionalWithPolymorphism.html
+
+## Architecture evolution, conformance, and drift
+
+Perry and Wolf describe software architecture through elements, form, and rationale and distinguish erosion through violations from drift through changes that are insensitive to the architecture. Later literature uses erosion and drift with overlapping meanings.
+
+Use: state the operational meaning in every comparison. This skill reports observed architecture change separately from a conformance regression against declared intent.
+
+- Foundations for the Study of Software Architecture: https://www.cs.unibo.it/~cianca/wwwpages/readings/perrywolf.pdf
+
+Software reflexion models compare an intended high-level model, an extracted source model, and an explicit mapping. They expose convergent, divergent, and absent relations without requiring every implementation entity to appear at the high level. Static conformance literature further distinguishes required and merely permitted relations.
+
+Use: map both snapshots at the same abstraction level and report a forbidden new edge differently from an unused permitted edge.
+
+- Software Reflexion Models: https://doi.org/10.1145/222132.222136
+- Static Architecture-Conformance Checking overview: https://homepages.dcc.ufmg.br/~mtov/pub/2010_ieeesw.pdf
+
+Structural-distance research compares connectivity across version endpoints. It also identifies abstraction and entity mapping as validity constraints. A systematic mapping study of architecture erosion groups symptoms across structural, violation, quality, and evolution perspectives rather than establishing one universal quality score.
+
+Use: report graph distance only as structural churn over stable logical identities. Keep conformance, rationale, risk, and runtime uncertainty separate.
+
+Limit: structural distance depends on selected entities, relations, mapping, scope, and tool configuration. The erosion mapping study summarizes heterogeneous definitions and evidence; neither source validates a language-neutral degradation percentage.
+
+- Structural-distance metrics: https://doi.org/10.1109/METRICS.2005.35
+- Architecture-erosion systematic mapping study: https://doi.org/10.1002/smr.2423
+
+Git documents endpoint, merge-base, rename-aware diff, revision resolution, and detached worktree behavior.
+
+Use: resolve immutable snapshot IDs, declare range semantics, and preserve the user's current working tree.
+
+- Git diff: https://git-scm.com/docs/git-diff
+- Git rev-parse: https://git-scm.com/docs/git-rev-parse
+- Git worktree: https://git-scm.com/docs/git-worktree
 
 ## Regex and parser safety
 

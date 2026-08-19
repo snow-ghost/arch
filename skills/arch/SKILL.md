@@ -1,6 +1,6 @@
 ---
 name: arch
-description: Review, plan, implement, or visualize software changes with evidence-first architectural oversight. Use when generated or existing code may duplicate repository behavior, reinvent a standard or maintained library, depend on stale or deprecated APIs, cross architectural boundaries, accumulate cycles or concentrated complexity, parse structured data with brittle regexes, grow conditionals or switches, introduce unnecessary abstractions, or require a cleaner language-idiomatic design. Also use for dependency modernization, architecture reviews, refactoring plans, maintainability audits, and repository-grounded architecture maps, dependency graphs, process or sequence views, data-flow diagrams, state views, ownership trees, or current-versus-proposed diagrams. Do not use to demand patterns, diagrams, or low metric scores without a demonstrated maintenance, correctness, security, or evolution need.
+description: Review, compare, plan, implement, or visualize software changes with evidence-first architectural oversight. Use when code may duplicate repository behavior, reinvent a standard or maintained library, rely on stale or deprecated APIs, cross boundaries, accumulate cycles or concentrated complexity, parse structured data with brittle regexes, grow conditionals, or add unjustified abstractions. Also use to compare commits, branches, releases, or snapshots for architectural evolution, drift, conformance regressions, dependency-graph changes, and boundary movement; and for architecture maps, sequence, process, data-flow, state, ownership, deployment, or current-versus-proposed views. Do not use to demand patterns, diagrams, upgrades, or low metrics without demonstrated need.
 ---
 
 # Architecture Guard
@@ -16,11 +16,12 @@ Keep code changes small, repository-aware, current for the project's supported v
 - "Check whether this regex is a bounded recognizer or an unsafe substitute for a structured parser."
 - "Audit this generated module, but keep an exhaustive match if it is the clearest closed-world design."
 - "Map the affected checkout architecture at component level and show the payment sequence with repository evidence."
+- "Compare release 1.4 with 1.5 at the same architectural zoom and separate structural change from conformance drift."
 
 ## Establish authority and scope
 
 1. Read repository instructions, manifests, lockfiles, build configuration, tests, and nearby code before proposing a design.
-2. Determine the requested mode: review, implementation, modernization, or architecture planning.
+2. Determine the requested mode: review, implementation, modernization, architecture planning, visualization, or cross-version comparison. For a comparison, establish endpoint-to-endpoint or merge-base-to-target semantics.
 3. Record supported runtimes, frameworks, compatibility promises, public APIs, generated-code boundaries, and allowed scope. Treat repository configuration as authoritative until the user says otherwise.
 4. Ask only when a missing choice changes behavior, compatibility, dependency policy, or public architecture. Otherwise make a reversible assumption and label it.
 5. Read [review-method.md](references/review-method.md) before a substantive audit or implementation.
@@ -49,6 +50,18 @@ State what was searched. Absence of evidence is not proof that no reusable imple
 8. Use the repository's established format first; otherwise prefer portable Mermaid flowchart, sequence, or state syntax without adding a dependency.
 
 Read [architecture-views.md](references/architecture-views.md) before producing a diagram or broad architecture map. Follow its zoom, evidence, notation, and IDEF0 constraints.
+
+## Compare architecture across snapshots
+
+1. Resolve the baseline and target to immutable commit IDs or content-addressed snapshots. Record endpoint-to-endpoint or merge-base-to-target semantics, scope, viewpoint, zoom, runtime targets, exclusions, and analyzer configurations.
+2. Build each architecture model independently with the same aggregation and evidence rules. Map renamed, moved, split, merged, dynamic, and unresolved elements explicitly.
+3. Compare material components, typed relations, boundaries, ownership and state, runtime scenarios, public contracts, dependencies, deployment, and conformance controls.
+4. Classify implementation change as **None**, **Local**, **Material**, **Systemic**, or **Unknown** at the selected viewpoint. Treat this as breadth, not quality or severity.
+5. Classify conformance separately. Call a change drift only when declared intent, a target mismatch, and a concrete harm mechanism are evidenced. Otherwise report **Not assessed**, **No demonstrated regression**, or an intentional or accepted evolution.
+6. Report per-axis deltas before any metric. Use graph distance only as labeled structural churn over stable logical IDs; never present it as a universal degradation percentage.
+7. Preserve the user's current worktree. Prefer Git tree inspection; use isolated temporary worktrees only when an analyzer or build requires checked-out files.
+
+Read [architecture-comparison.md](references/architecture-comparison.md) before comparing versions. Follow its snapshot contract, stable-identity mapping, scale, conformance, delta-view, and verification rules.
 
 ## Apply the reuse ladder
 
@@ -155,6 +168,8 @@ See [examples.md](references/examples.md) when deciding whether to intervene, ac
 
 For an architecture view, report its question and scope, the diagram or reason for skipping it, an evidence index, inferred edges and unknowns, and findings supported by the view.
 
+For a cross-version comparison, lead with resolved snapshot IDs, range semantics, scope, viewpoint, change scale, conformance status, and a one-sentence decision. Include a stable-ID delta table, evidence from both snapshots, comparable commands, unknown mappings, and intentional changes that must not be called drift.
+
 ## Enforce guardrails
 
 - Do not perform speculative rewrites or widen scope to unrelated architecture.
@@ -167,6 +182,8 @@ For an architecture view, report its question and scope, the diagram or reason f
 - Do not treat generated or vendored code as hand-maintained code without checking its source of truth.
 - Do not treat a diagram as proof without repository evidence or turn every file, class, or function into an architectural node.
 - Do not mix observed and proposed edges or present inferred runtime wiring as verified.
+- Do not infer architecture change from changed-file counts, line churn, release-number size, renames, or directory movement alone.
+- Do not call a difference architectural drift without declared intent, a demonstrated mismatch, and a concrete harm mechanism.
 
 ## Load references selectively
 
@@ -177,3 +194,4 @@ For an architecture view, report its question and scope, the diagram or reason f
 - Use [examples.md](references/examples.md) for ambiguous intervention decisions.
 - Use [sources.md](references/sources.md) when explaining the empirical basis or updating this skill.
 - Use [architecture-views.md](references/architecture-views.md) for architecture maps, dependency graphs, sequence, process, data-flow, state, ownership, deployment, or IDEF0 views.
+- Use [architecture-comparison.md](references/architecture-comparison.md) for comparisons between commits, branches, releases, directories, or snapshots.

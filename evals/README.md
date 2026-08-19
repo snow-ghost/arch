@@ -2,7 +2,7 @@
 
 The harness measures whether the local arch skill improves architecture decisions over the same agent without the skill. It does not treat skill activation or longer answers as success.
 
-The current suite contains 18 cases. A fully specified run of the current eight-dimension suite found no aggregate quality lift: +0.04 mean paired delta, with 12 arch wins, 14 baseline wins, and 28 ties. The four architecture-view cases scored +0.67, while the pre-existing 14 cases scored -0.14. Cases and skill were developed against the visible suite, so this is a tuning result rather than independent validation; see [the 19 August 2026 report](../docs/benchmark-2026-08-19.md). The original 14-case run is documented in [the 6 August 2026 report](../docs/benchmark-2026-08-06.md). Future claims still require a named model, command, sample size, judge, and run artifact.
+The current suite contains 21 cases. The latest fully specified run used the preceding 18-case suite and found no aggregate quality lift: +0.04 mean paired delta, with 12 arch wins, 14 baseline wins, and 28 ties. Its four architecture-view cases scored +0.67, while the pre-existing 14 cases scored -0.14. The three new architecture-comparison cases have not been run behaviorally. Cases and skill were developed against the visible suite, so reported runs are tuning results rather than independent validation; see [the 19 August 2026 report](../docs/benchmark-2026-08-19.md). The original 14-case run is documented in [the 6 August 2026 report](../docs/benchmark-2026-08-06.md). Future claims still require a named model, command, sample size, judge, and run artifact.
 
 ## What the cases test
 
@@ -17,6 +17,7 @@ The case set covers:
 - clone-detector and complexity false positives;
 - uncertainty that requires investigation before change;
 - component and sequence views, security DFDs, unnecessary-diagram rejection, and unresolved dynamic edges;
+- cross-version architecture change, conformance regression, rename false positives, and unresolved dynamic mappings;
 - Python, JavaScript or TypeScript, Go, Rust, Java, Kotlin, .NET, and C++ contexts.
 
 Routes are balanced across:
@@ -25,7 +26,7 @@ Routes are balanced across:
 - **skip:** the suspicious construct is the fitting design;
 - **clarify:** supplied evidence is insufficient for a safe decision.
 
-The current distribution is 8 apply, 5 skip, and 5 clarify cases.
+The current distribution is 9 apply, 6 skip, and 6 clarify cases.
 
 ## Generate a dry run
 
@@ -72,7 +73,7 @@ The command randomizes baseline and arch as A or B for every pair, writes anonym
 - blind/judgments-template.json;
 - blind/pairs/PAIR_ID/judge-prompt.md.
 
-The rubric scores eight dimensions from 0 to 2, including architecture-view accuracy. It penalizes unnecessary diagrams, false visual precision, and inferred relationships presented as observed.
+The rubric scores eight dimensions from 0 to 2, including architecture-view and comparison accuracy. It checks stable logical identity, aligned scope and zoom, and separation of structural delta from conformance change. It penalizes unnecessary diagrams, false visual precision, incomparable snapshots, and inferred relationships presented as observed.
 
 Run an automated judge whose command reads stdin and returns the required JSON object. Runner options must precede blind_dir:
 
@@ -115,6 +116,6 @@ Do not report only an aggregate mean. Include:
 
 ## Interpretation
 
-A useful skill should improve decision calibration, not maximize interventions. It should win apply cases by finding concrete reuse, dependency, or boundary corrections; win skip cases by avoiding architecture theater; and win clarify cases by obtaining the minimum evidence needed before changing code.
+A useful skill should improve decision calibration, not maximize interventions. It should win apply cases by finding concrete reuse, dependency, boundary, or conformance corrections; win skip cases by avoiding architecture theater and file-churn false positives; and win clarify cases by obtaining the minimum evidence needed before changing code or claiming drift.
 
 Treat a small result as a smoke test. Do not generalize selected post-tuning cases. Publish raw artifacts or enough metadata for independent replication.

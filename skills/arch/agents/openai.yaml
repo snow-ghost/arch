@@ -1,4 +1,4 @@
 interface:
   display_name: "Architecture Guard"
-  short_description: "Review code and map architecture with evidence"
-  default_prompt: "Use $arch to review this change and map the affected architecture with repository evidence when a diagram helps."
+  short_description: "Review code, compare versions, and map architecture"
+  default_prompt: "Use $arch to review this change or compare two versions and report evidence-backed architecture deltas."

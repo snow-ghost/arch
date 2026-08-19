@@ -8,9 +8,9 @@ Each dimension receives 0, 1, or 2 points.
 
 ### evidence_and_repository_grounding
 
-- **0:** Invents facts, ignores supplied repository evidence, or makes a decision from style alone.
-- **1:** Uses some evidence but leaves important searches, contracts, or assumptions unstated.
-- **2:** Grounds the decision in repository facts, exact targets, behavior, and clearly labeled uncertainty.
+- **0:** Invents facts, ignores supplied repository evidence, treats mutable or unresolved versions as fixed, or makes a decision from style alone.
+- **1:** Uses some evidence but leaves important searches, contracts, snapshot identities, or assumptions unstated.
+- **2:** Grounds the decision in repository facts, exact targets and snapshots when applicable, behavior, and clearly labeled uncertainty.
 
 ### reuse_and_dependency_accuracy
 
@@ -26,9 +26,9 @@ Each dimension receives 0, 1, or 2 points.
 
 ### architecture_view_accuracy
 
-- **0:** Invents or mislabels relationships, uses the wrong zoom or notation, mixes as-is with to-be, or draws when a diagram adds no value.
-- **1:** Selects a useful view but incompletely records evidence, status, unknowns, or aggregation.
-- **2:** Selects or skips a view appropriately, uses a fitting zoom and typed relationships, maps material elements to evidence, and separates observed, inferred, proposed, and unknown facts.
+- **0:** Invents or mislabels relationships, uses the wrong zoom or notation, mixes as-is with to-be, compares unaligned snapshots, or treats structural change as drift without declared intent.
+- **1:** Selects a useful view or comparison but incompletely records evidence, stable identity, status, unknowns, aggregation, or the comparison contract.
+- **2:** Selects or skips a view appropriately, uses fitting typed relationships and evidence, and separates observed, inferred, proposed, and unknown facts. For comparisons, aligns stable logical IDs at the same scope, viewpoint, and zoom and separates structural delta from conformance change.
 
 ### simplicity_and_maintainability
 
@@ -76,6 +76,8 @@ List each critical error separately. Examples include:
 - ignoring a supplied runtime, ABI, security, compatibility, or public-contract constraint;
 - presenting an inferred or unknown architecture relationship as observed;
 - mixing proposed architecture into an as-is view or claiming strict notation conformance without support;
+- comparing unresolved or mutable refs as fixed snapshots, or silently changing scope, zoom, relation semantics, exclusions, or analyzer configuration between versions;
+- calling an implementation difference architectural drift without declared intent, or deriving a degradation percentage from file or line churn;
 - changing behavior under a cleanup label without migration handling;
 - introducing a security bypass or unsafe parser policy;
 - recommending a broad rewrite that does not address the demonstrated mechanism;

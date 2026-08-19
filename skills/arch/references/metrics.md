@@ -6,6 +6,7 @@ Metrics help locate review targets and compare a change with its baseline. They 
 
 - [Principles](#principles)
 - [Useful signals](#useful-signals)
+- [Cross-version structural churn](#cross-version-structural-churn)
 - [Structural erosion indicator](#structural-erosion-indicator)
 - [Verbosity indicator](#verbosity-indicator)
 - [Recommended review table](#recommended-review-table)
@@ -63,6 +64,19 @@ Count direct and transitive dependencies, exposed types from external packages, 
 ### Testability signals
 
 Inspect branch coverage, mutation results, flaky tests, fixture setup, hidden global state, and time or network dependence. Coverage shows execution, not assertion quality. Mutation testing can be expensive and language support varies.
+
+## Cross-version structural churn
+
+Build aligned architecture models before calculating a graph delta. Use the same scope, viewpoint, zoom, node identity, relation semantics, exclusions, and analyzer configuration for both snapshots. Map moves and renames by demonstrated responsibility and contract continuity, not path equality.
+
+When mappings are stable, optional set-based indicators are:
+
+    node churn = |N_base symmetric_difference N_target| / |N_base union N_target|
+    relation churn = |E_base symmetric_difference E_target| / |E_base union E_target|
+
+Define empty-set handling and exclude unresolved mappings or report a bounded range. These indicators measure structural difference. They do not measure degradation, rationale, runtime semantics, risk, or value.
+
+Prefer a per-axis delta profile and gates on new forbidden edges, cycles, or contract breaks. Require repository-owned axes, weights, tool versions, baseline, and ratcheting policy before emitting one composite CI score. See [architecture-comparison.md](architecture-comparison.md) for the full comparison contract.
 
 ## Structural erosion indicator
 

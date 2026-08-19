@@ -48,6 +48,10 @@ Keep code evidence in the evidence index unless a symbol is itself the review su
 
 Prefer one primary view. Add a supporting view only when it answers a different question, such as a component graph for ownership plus a sequence diagram for one failure path.
 
+For a cross-version view, resolve both snapshots, declare endpoint-to-endpoint or merge-base-to-target semantics, and apply the same scope, viewpoint, zoom, aggregation rule, and relation types. Preserve stable logical IDs across renamed or moved code. Read [architecture-comparison.md](architecture-comparison.md) before rendering a delta view.
+
+Do not place removed and added files at architecture level until responsibility, contract, ownership, or runtime evidence establishes that their logical nodes changed.
+
 ## Collect and classify evidence
 
 Read the repository before drawing. Inspect only sources relevant to the stated scope:
