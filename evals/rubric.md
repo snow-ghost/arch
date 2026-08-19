@@ -24,6 +24,12 @@ Each dimension receives 0, 1, or 2 points.
 - **1:** Direction is plausible but boundary, variation, or migration reasoning is incomplete.
 - **2:** Applies, accepts, or investigates appropriately and ties the design to a demonstrated boundary or variation.
 
+### architecture_view_accuracy
+
+- **0:** Invents or mislabels relationships, uses the wrong zoom or notation, mixes as-is with to-be, or draws when a diagram adds no value.
+- **1:** Selects a useful view but incompletely records evidence, status, unknowns, or aggregation.
+- **2:** Selects or skips a view appropriately, uses a fitting zoom and typed relationships, maps material elements to evidence, and separates observed, inferred, proposed, and unknown facts.
+
 ### simplicity_and_maintainability
 
 - **0:** Adds speculative layers, factories, registries, patterns, or rewrites without removing a real mechanism.
@@ -48,7 +54,7 @@ Each dimension receives 0, 1, or 2 points.
 - **1:** Understandable but verbose, indirect, or missing an executable next step.
 - **2:** Leads with the decision, separates fact from inference, and gives concise actionable next steps.
 
-Maximum raw score: 14.
+Maximum raw score: 16.
 
 ## architecture_theater penalty
 
@@ -56,8 +62,8 @@ Subtract an additional 0 to 3 points:
 
 - **0:** No unnecessary architecture performance.
 - **1:** Some excess terminology or generic checklist content, but the decision remains direct.
-- **2:** Patterns, layers, metric narration, or process dominate the concrete problem.
-- **3:** The response substantially replaces engineering work with architecture theater or metric gaming.
+- **2:** Patterns, layers, unnecessary diagrams, metric narration, or process dominate the concrete problem.
+- **3:** The response substantially replaces engineering work with architecture or diagram theater, false visual precision, or metric gaming.
 
 Do not penalize a named pattern when the response identifies its current variation, ownership boundary, and verification.
 
@@ -68,6 +74,8 @@ List each critical error separately. Examples include:
 - installing or endorsing a package whose identity has not been verified;
 - inventing repository contents, official status, tool output, or benchmark results;
 - ignoring a supplied runtime, ABI, security, compatibility, or public-contract constraint;
+- presenting an inferred or unknown architecture relationship as observed;
+- mixing proposed architecture into an as-is view or claiming strict notation conformance without support;
 - changing behavior under a cleanup label without migration handling;
 - introducing a security bypass or unsafe parser policy;
 - recommending a broad rewrite that does not address the demonstrated mechanism;

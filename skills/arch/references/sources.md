@@ -2,6 +2,19 @@
 
 This bibliography records the evidence behind the workflow. It is not a universal scorecard. Results depend on model, date, language, prompt, repository, task, tool configuration, and evaluation design.
 
+## Contents
+
+- [Generated-code structure and maintainability](#generated-code-structure-and-maintainability)
+- [Repository and documentation grounding](#repository-and-documentation-grounding)
+- [Dependencies, APIs, and package identity](#dependencies-apis-and-package-identity)
+- [Security evidence is context-dependent](#security-evidence-is-context-dependent)
+- [Duplication and code smells](#duplication-and-code-smells)
+- [Patterns and architectural complexity](#patterns-and-architectural-complexity)
+- [Regex and parser safety](#regex-and-parser-safety)
+- [Skill effectiveness](#skill-effectiveness)
+- [Official tool references](#official-tool-references)
+- [Architecture views and notation](#architecture-views-and-notation)
+
 ## Generated-code structure and maintainability
 
 ### SlopCodeBench
@@ -162,3 +175,42 @@ Confirm versions and configuration in the target repository.
 - NetArchTest: https://github.com/BenMorris/NetArchTest
 - cargo-deny: https://embarkstudios.github.io/cargo-deny/
 - golangci-lint depguard: https://golangci-lint.run/docs/linters/configuration/#depguard
+
+## Architecture views and notation
+
+The C4 model defines software system, container, component, and code abstractions and allows teams to use only the diagram levels that add value.
+
+Use: choose the smallest zoom that answers the review question and aggregate repository symbols into demonstrated boundaries.
+
+Limit: C4 vocabulary does not prove that a node, edge, or boundary exists in the target repository.
+
+- Abstractions: https://c4model.com/abstractions
+- Diagrams: https://c4model.com/diagrams
+
+OWASP's threat-modeling guidance uses data-flow diagrams with external entities, processes, data stores, data flows, and trust boundaries.
+
+Use: represent security-relevant data movement and boundary crossings; name the data on important flows.
+
+Limit: a DFD is an input to threat analysis, not a complete threat model or proof of security.
+
+- Threat Modeling Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html
+
+Mermaid documents flowchart, sequence, and state syntax. Its native C4 syntax is explicitly experimental.
+
+Use: prefer the repository's established renderer; otherwise emit portable Mermaid flowchart, sequence, or state text and verify syntax against the repository's pinned renderer when one exists.
+
+Limit: do not assume experimental C4 syntax is supported by every Markdown host or Mermaid version.
+
+- Flowchart: https://mermaid.js.org/syntax/flowchart.html
+- Sequence: https://mermaid.js.org/syntax/sequenceDiagram.html
+- State: https://mermaid.js.org/syntax/stateDiagram.html
+- Experimental C4: https://mermaid.js.org/syntax/c4.html
+
+FIPS PUB 183 standardized IDEF0 in 1993. NIST lists FIPS 183 as withdrawn on 2 September 2008.
+
+Use: provide IDEF0-style input, control, output, and mechanism views only when a stakeholder or existing artifact requires that legacy notation.
+
+Limit: label Mermaid approximations as non-normative and make no current FIPS-conformance claim.
+
+- FIPS PUB 183: https://nvlpubs.nist.gov/nistpubs/Legacy/FIPS/fipspub183.pdf
+- NIST withdrawn FIPS index: https://www.nist.gov/system/files/documents/2016/12/15/withdrawn_fips_by_numerical_order_index.pdf

@@ -2,7 +2,7 @@
   "name": "arch",
   "displayName": "Architecture Guard",
   "version": "0.1.0",
-  "description": "Review generated and existing code for reuse, dependency health, architectural fit, and accidental complexity.",
+  "description": "Review code for reuse, dependency health, architectural fit, accidental complexity, and evidence-backed architecture views.",
   "author": {
     "name": "snow-ghost",
     "url": "https://github.com/snow-ghost"

@@ -1,7 +1,7 @@
 {
   "name": "arch",
   "version": "0.1.0",
-  "description": "Review generated and existing code for reuse, dependency health, architectural fit, and accidental complexity.",
+  "description": "Review code for reuse, dependency health, architectural fit, accidental complexity, and evidence-backed architecture views.",
   "author": {
     "name": "snow-ghost",
     "url": "https://github.com/snow-ghost"
@@ -19,14 +19,14 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Architecture Guard",
-    "shortDescription": "Keep generated code simple and maintainable.",
-    "longDescription": "Evidence-first architectural oversight for finding duplicated behavior, stale or deprecated dependencies, boundary violations, brittle workarounds, and unjustified complexity without forcing pattern-heavy rewrites.",
+    "shortDescription": "Review code and map architecture with evidence.",
+    "longDescription": "Evidence-first architectural oversight for finding duplicated behavior, stale or deprecated dependencies, boundary violations, brittle workarounds, unjustified complexity, and for rendering scoped repository-grounded architecture views.",
     "developerName": "snow-ghost",
     "category": "Productivity",
     "capabilities": [],
     "defaultPrompt": [
-      "Review this change for architectural and maintainability risks.",
-      "Prefer repository reuse and the smallest language-idiomatic design."
+      "Review this change and map the affected architecture when a diagram clarifies it.",
+      "Prefer repository reuse and the smallest language-idiomatic design; tie material diagram edges to repository evidence."
     ]
   }
 }

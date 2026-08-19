@@ -2,6 +2,18 @@
 
 Use this method for reviews, implementation planning, and post-generation cleanup. It separates verified defects from taste and keeps recommendations proportional to risk.
 
+## Contents
+
+- [1. Define the contract](#1-define-the-contract)
+- [2. Build a local architecture map](#2-build-a-local-architecture-map)
+- [3. Establish evidence](#3-establish-evidence)
+- [4. Classify the observation](#4-classify-the-observation)
+- [5. Prove the harm mechanism](#5-prove-the-harm-mechanism)
+- [6. Assign severity](#6-assign-severity)
+- [7. Select the correction](#7-select-the-correction)
+- [8. Verify](#8-verify)
+- [Finding template](#finding-template)
+
 ## 1. Define the contract
 
 Capture before judging the code:
@@ -30,6 +42,16 @@ Trace only the affected path unless the evidence requires a wider map:
 Search by behavior as well as symbol. Useful search keys include constants, protocol fields, error messages, schema names, endpoint paths, serialization keys, and test fixtures.
 
 Record search coverage in one sentence. Example: "Searched src, tests, manifest, and lockfile for token parsing and found one canonical helper used by three callers."
+
+Keep this map internal when prose is clearer. When the user requests a view or several boundaries, owners, states, or interactions are hard to verify linearly:
+
+1. State the question, snapshot, scope, viewpoint, and whether the view is observed as-is or proposed to-be.
+2. Choose one fitting view and zoom. Do not combine a dependency graph, sequence, data flow, and state model into one overloaded diagram.
+3. Aggregate symbols by demonstrated responsibility, ownership, runtime, data, trust, external, or public-contract boundary.
+4. Assign evidence IDs to material nodes and edges. Map each ID to a path, symbol, manifest, configuration entry, test, or runtime trace.
+5. Mark relationships as observed, inferred, proposed, or unknown. Keep as-is and to-be views separate.
+
+Use [architecture-views.md](architecture-views.md) for notation and rendering rules. A complete-looking diagram is not evidence that dynamic wiring, reflection, generated configuration, or runtime routing has been resolved.
 
 ## 3. Establish evidence
 

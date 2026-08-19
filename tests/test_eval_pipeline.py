@@ -80,6 +80,7 @@ class EvaluationPipelineTests(unittest.TestCase):
                 "evidence_and_repository_grounding",
                 "reuse_and_dependency_accuracy",
                 "architectural_fit",
+                "architecture_view_accuracy",
                 "simplicity_and_maintainability",
                 "language_and_api_accuracy",
                 "verification_and_migration_safety",

@@ -1,6 +1,6 @@
 ---
 name: arch
-description: Review, plan, or implement software changes with evidence-first architectural oversight. Use when generated or existing code may duplicate repository behavior, reinvent a standard or maintained library, depend on stale or deprecated APIs, cross architectural boundaries, accumulate cycles or concentrated complexity, parse structured data with brittle regexes, grow conditionals or switches, introduce unnecessary abstractions, or require a cleaner language-idiomatic design. Also use for dependency modernization, architecture reviews, refactoring plans, and maintainability audits. Do not use to demand patterns or low metric scores without a demonstrated maintenance, correctness, security, or evolution cost.
+description: Review, plan, implement, or visualize software changes with evidence-first architectural oversight. Use when generated or existing code may duplicate repository behavior, reinvent a standard or maintained library, depend on stale or deprecated APIs, cross architectural boundaries, accumulate cycles or concentrated complexity, parse structured data with brittle regexes, grow conditionals or switches, introduce unnecessary abstractions, or require a cleaner language-idiomatic design. Also use for dependency modernization, architecture reviews, refactoring plans, maintainability audits, and repository-grounded architecture maps, dependency graphs, process or sequence views, data-flow diagrams, state views, ownership trees, or current-versus-proposed diagrams. Do not use to demand patterns, diagrams, or low metric scores without a demonstrated maintenance, correctness, security, or evolution need.
 ---
 
 # Architecture Guard
@@ -15,6 +15,7 @@ Keep code changes small, repository-aware, current for the project's supported v
 - "Modernize these dependencies without exceeding the repository's runtime and compatibility targets."
 - "Check whether this regex is a bounded recognizer or an unsafe substitute for a structured parser."
 - "Audit this generated module, but keep an exhaustive match if it is the clearest closed-world design."
+- "Map the affected checkout architecture at component level and show the payment sequence with repository evidence."
 
 ## Establish authority and scope
 
@@ -35,6 +36,19 @@ Build the smallest useful map of the affected path:
 5. Run repository-native checks first. Do not install a new analyzer merely to complete an ordinary review.
 
 State what was searched. Absence of evidence is not proof that no reusable implementation exists.
+
+## Render architecture views when useful
+
+1. Draw only when a relationship is materially easier to verify visually or the user requests a view.
+2. State the question, snapshot, affected scope, viewpoint, and whether the view is observed as-is or proposed to-be.
+3. Select the fitting view: context or component graph, dependency graph, sequence, data flow, process flow, state, ownership tree, deployment, or IDEF0 when explicitly required.
+4. Aggregate files and symbols into nodes with demonstrated responsibility, ownership, runtime, data, external, trust, or public-contract boundaries.
+5. Give material nodes and edges stable IDs and map them to paths, symbols, configuration, tests, or runtime evidence.
+6. Distinguish observed, inferred, proposed, and unknown relationships. Never fill a dynamic edge merely to complete the picture.
+7. Keep observed and proposed architecture in separate views. Skip a diagram when a compact text map is clearer.
+8. Use the repository's established format first; otherwise prefer portable Mermaid flowchart, sequence, or state syntax without adding a dependency.
+
+Read [architecture-views.md](references/architecture-views.md) before producing a diagram or broad architecture map. Follow its zoom, evidence, notation, and IDEF0 constraints.
 
 ## Apply the reuse ladder
 
@@ -139,6 +153,8 @@ For an implementation, report:
 
 See [examples.md](references/examples.md) when deciding whether to intervene, accept, or investigate.
 
+For an architecture view, report its question and scope, the diagram or reason for skipping it, an evidence index, inferred edges and unknowns, and findings supported by the view.
+
 ## Enforce guardrails
 
 - Do not perform speculative rewrites or widen scope to unrelated architecture.
@@ -149,6 +165,8 @@ See [examples.md](references/examples.md) when deciding whether to intervene, ac
 - Do not invent packages, APIs, repository conventions, tool output, benchmark results, or migration guarantees.
 - Do not claim cleaner architecture when complexity merely moved.
 - Do not treat generated or vendored code as hand-maintained code without checking its source of truth.
+- Do not treat a diagram as proof without repository evidence or turn every file, class, or function into an architectural node.
+- Do not mix observed and proposed edges or present inferred runtime wiring as verified.
 
 ## Load references selectively
 
@@ -158,3 +176,4 @@ See [examples.md](references/examples.md) when deciding whether to intervene, ac
 - Use [metrics.md](references/metrics.md) for measurement and quality gates.
 - Use [examples.md](references/examples.md) for ambiguous intervention decisions.
 - Use [sources.md](references/sources.md) when explaining the empirical basis or updating this skill.
+- Use [architecture-views.md](references/architecture-views.md) for architecture maps, dependency graphs, sequence, process, data-flow, state, ownership, deployment, or IDEF0 views.

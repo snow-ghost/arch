@@ -1,15 +1,16 @@
 # Исследование архитектурных дефектов LLM-кода
 
-Дата среза: 5 августа 2026 года.
+Дата среза: 19 августа 2026 года.
 
 ## Задача
 
-Исследование отвечает на четыре вопроса:
+Исследование отвечает на пять вопросов:
 
 1. Какие дефекты возникают при генерации и длительном развитии кода агентами?
 2. Какие меры дают проверяемый эффект?
 3. Какие сигналы допускают автоматизацию?
 4. Где язык и экосистема меняют архитектурное решение?
+5. Какие архитектурные представления помогают проверке кода и где они создают ложную точность?
 
 Выводы используются как основания workflow. Они не задают универсальный порог качества.
 
@@ -89,6 +90,18 @@ SlopCodeBench определяет complexity mass функции как cycloma
 
 Regex подходит для ограниченного regular language. Nested grammar, quoting, escaping, evolving standard и untrusted input с backtracking требуют специализированного parser, bounds и adversarial tests. Переход на standard parser не отменяет policy validation.
 
+### Представление архитектуры выбирается по вопросу
+
+[C4 model](https://c4model.com/abstractions) задаёт уровни software system, container, component и code. [Рекомендации C4 по диаграммам](https://c4model.com/diagrams) допускают выбор только тех уровней, которые приносят пользу аудитории. Для скилла это означает укрупнение файлов и символов до подтверждённых границ ответственности, runtime, данных или внешнего контракта.
+
+[OWASP Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html) включает в DFD внешние сущности, процессы, хранилища, потоки данных и trust boundaries. Такой вид подходит для security-relevant движения данных. DFD служит входом для threat analysis и сам по себе не доказывает безопасность.
+
+Официальная документация Mermaid описывает [flowchart](https://mermaid.js.org/syntax/flowchart.html), [sequence](https://mermaid.js.org/syntax/sequenceDiagram.html) и [state](https://mermaid.js.org/syntax/stateDiagram.html). [C4-синтаксис Mermaid](https://mermaid.js.org/syntax/c4.html) имеет статус experimental. Поэтому скилл предпочитает формат репозитория, а при его отсутствии — переносимые flowchart, sequence и state без новой runtime-зависимости.
+
+[FIPS PUB 183](https://nvlpubs.nist.gov/nistpubs/Legacy/FIPS/fipspub183.pdf) определял IDEF0 через input, control, output и mechanism. [Индекс NIST](https://www.nist.gov/system/files/documents/2016/12/15/withdrawn_fips_by_numerical_order_index.pdf) указывает, что стандарт отозван 2 сентября 2008 года. IDEF0 остаётся опциональной legacy-нотацией для существующих требований; Mermaid-аппроксимация не считается строгим соответствием.
+
+Следствие: диаграмма получает вопрос, snapshot, scope, viewpoint и статус as-is или to-be. Материальные узлы и связи имеют evidence IDs, а observed, inferred, proposed и unknown отношения разделяются. Для локального helper с одним caller, без I/O, state и boundary используется текстовая карта: набор диаграмм не добавляет проверяемых отношений.
+
 ## Отличия языков
 
 | Экосистема | Предпочтение | Специфический риск | Примеры проверки |
@@ -105,13 +118,14 @@ Regex подходит для ограниченного regular language. Neste
 
 ## Архитектура скилла
 
-Рабочий алгоритм состоит из пяти проверяемых решений:
+Рабочий алгоритм состоит из шести проверяемых решений:
 
 1. Установить scope, contracts и target versions.
 2. Построить локальную карту callers, data ownership, tests и dependency direction.
-3. Пройти reuse ladder.
-4. Для finding связать signal с harm mechanism.
-5. Выбрать минимальную correction и проверку.
+3. Выбрать нужный архитектурный вид и масштаб или явно отказаться от диаграммы.
+4. Пройти reuse ladder.
+5. Для finding связать signal с harm mechanism.
+6. Выбрать минимальную correction и проверку.
 
 Подробные справочники загружаются условно. Такой дизайн учитывает результаты [SkillsBench](https://arxiv.org/abs/2602.12670), где curated skills в среднем помогали, но отдельные skills ухудшали результат, и [SWE-Skills-Bench](https://arxiv.org/abs/2603.15401), где средний эффект public SWE skills был мал, а version-mismatched guidance давала ухудшение. Обе оценки зависят от набора задач; SWE-Skills-Bench на дату среза имеет preprint-статус.
 
@@ -122,6 +136,7 @@ Regex подходит для ограниченного regular language. Neste
 - repository-first поиск уменьшает предложение duplicate helpers и внешних packages;
 - evidence schema снижает ложные findings по regex, switch, clone и age;
 - language profiles уменьшают перенос объектных паттернов в Go и Rust;
+- evidence-backed views уменьшают выдуманные runtime-связи и избыточную детализацию архитектурных карт;
 - current-documentation step уменьшает ошибки по deprecated API и dependency migration;
 - штраф architecture_theater снижает лишние layers без ухудшения correctness.
 

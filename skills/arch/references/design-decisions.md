@@ -2,6 +2,17 @@
 
 Use this reference when control flow, layering, or abstraction is under review. Start from the variation and ownership problem. Select a pattern only after the direct design stops being the clearest option.
 
+## Contents
+
+- [Decision sequence](#decision-sequence)
+- [Conditional and switch choices](#conditional-and-switch-choices)
+- [State and workflow choices](#state-and-workflow-choices)
+- [Boundary choices](#boundary-choices)
+- [Duplicate-code choices](#duplicate-code-choices)
+- [Regex and parsing choices](#regex-and-parsing-choices)
+- [Dependency versus local code](#dependency-versus-local-code)
+- [Architecture decision note](#architecture-decision-note)
+
 ## Decision sequence
 
 1. Name the behavior that changes.

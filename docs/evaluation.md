@@ -1,12 +1,12 @@
 # Оценка Architecture Guard
 
-Дата среза: 6 августа 2026 года.
+Дата среза: 19 августа 2026 года.
 
 ## Вопрос оценки
 
 Основной вопрос: улучшает ли arch решение архитектурных задач по сравнению с тем же агентом и тем же prompt без локального скилла?
 
-Успех означает более точную калибровку решения. Условие arch должно находить доказанное нарушение, сохранять подходящую прямую конструкцию и откладывать изменение при недостатке данных.
+Успех означает более точную калибровку решения. Условие arch должно находить доказанное нарушение, сохранять подходящую прямую конструкцию, выбирать или пропускать архитектурное представление по задаче и откладывать изменение при недостатке данных.
 
 ## Дизайн
 
@@ -26,15 +26,15 @@ Manifest фиксирует cases, условия, число повторов, 
 
 ## Набор кейсов
 
-В версии 0.1 содержится 14 кейсов:
+Текущий набор версии 0.1 содержит 18 кейсов:
 
-- apply: 6;
-- skip: 4;
-- clarify: 4.
+- apply: 8;
+- skip: 5;
+- clarify: 5.
 
 Языковые контексты: Python, TypeScript или JavaScript, Go, Rust, Java, Kotlin, C# и C++.
 
-Кейсы охватывают repository reuse, deprecated API, package hallucination, dependency direction, открытый и закрытый dispatch, безопасный и хрупкий regex, intentional duplication, version pinning, complexity metric и ABI migration.
+Кейсы охватывают repository reuse, deprecated API, package hallucination, dependency direction, открытый и закрытый dispatch, безопасный и хрупкий regex, intentional duplication, version pinning, complexity metric, ABI migration, component и sequence views, security DFD, отказ от лишней диаграммы и неизвестные dynamic edges.
 
 Контрпримеры обязательны. Eval, состоящий только из задач с ожидаемым рефакторингом, поощряет лишнее вмешательство.
 
@@ -42,17 +42,18 @@ Manifest фиксирует cases, условия, число повторов, 
 
 build_blind_pairs.py случайно назначает baseline и arch меткам A и B. Judge получает задачу, task-specific expected properties, rubric и два ответа. key.json хранится отдельно.
 
-Семь измерений оцениваются от 0 до 2:
+Восемь измерений оцениваются от 0 до 2:
 
 - evidence and repository grounding;
 - reuse and dependency accuracy;
 - architectural fit;
+- architecture view accuracy;
 - simplicity and maintainability;
 - language and API accuracy;
 - verification and migration safety;
 - clarity and actionability.
 
-Дополнительный штраф architecture_theater от 0 до 3 применяется за слои, паттерны, метрики и процесс, которые вытесняют конкретное решение. Critical errors учитываются отдельно.
+Дополнительный штраф architecture_theater от 0 до 3 применяется за слои, паттерны, лишние диаграммы, ложную визуальную точность, метрики и процесс, которые вытесняют конкретное решение. Critical errors учитываются отдельно.
 
 ## Отчётные показатели
 
@@ -73,9 +74,9 @@ build_blind_pairs.py случайно назначает baseline и arch мет
 
 ## Текущий статус
 
-Реализация runner, blind-pair builder, automated judge runner, scorer, rubric и 14 кейсов завершена.
+Реализация runner, blind-pair builder, automated judge runner, scorer, восьмимерной rubric и 18 кейсов завершена. Четыре architecture-view кейса поведенчески не запускались.
 
-Первый зафиксированный прогон проведён на Codex gpt-5.6-sol с reasoning effort max: 14 кейсов, 3 повтора, 84 генерации и 42 слепые пары. Claude opus, resolved как claude-opus-5, дал следующие результаты:
+Первый зафиксированный прогон проведён на исходном наборе: Codex gpt-5.6-sol с reasoning effort max, 14 кейсов, 3 повтора, 84 генерации и 42 слепые пары. Claude opus, resolved как claude-opus-5, дал следующие результаты:
 
 | Маршрут | Пар | Baseline | Arch | Дельта |
 |---|---:|---:|---:|---:|
@@ -84,18 +85,20 @@ build_blind_pairs.py случайно назначает baseline и arch мет
 | clarify | 12 | 13,25 | 12,92 | −0,33 |
 | все | 42 | 13,52 | 13,52 | +0,00 |
 
+Adjusted scores этого прогона рассчитаны по исходной семимерной rubric с максимумом 14. Будущие результаты по восьмимерной rubric с максимумом 16 нельзя сравнивать с ними напрямую.
+
 Judge предпочёл arch в 13 парах, baseline в 10, 19 пар признал равными. Critical errors: 0 в обоих условиях. Результат не подтверждает общий прирост качества. Полная конфигурация, команды, skill digest, стоимость, ошибки исполнения, ограничения изоляции и контрольные суммы находятся в [отдельном отчёте](benchmark-2026-08-06.md).
 
-Локальная структурная проверка 6 августа 2026 года дала следующие результаты:
+Локальная структурная проверка 19 августа 2026 года дала следующие результаты:
 
-- 16 unit tests: passed;
+- 18 unit tests: passed;
 - Agent Skill validator: passed;
 - Codex plugin validator: passed;
 - Claude Code plugin validate --strict: passed;
 - OpenCode debug skill: обнаружил arch и загрузил его из project-local path;
 - Python compilation для evals и tests: passed;
-- полный dry-run: 14 кейсов, 28 jobs, 28 dry-run artifacts;
-- расширенный technical-style lint русскоязычных документов: passed после разбора четырёх предупреждений.
+- полный dry-run: 18 кейсов, 36 jobs, 36 dry-run artifacts;
+- расширенный technical-style lint изменённых русскоязычных документов: passed после разбора предупреждений.
 
 Cursor manifest покрыт repository tests. Нативный Cursor runtime test не запускался: CLI отсутствует в среде разработки.
 
@@ -112,6 +115,6 @@ Cursor manifest покрыт repository tests. Нативный Cursor runtime t
 - advisory-ответ не доказывает корректность будущего patch;
 - sandbox-сбой может не дать условию arch прочитать локальный skill;
 - повторные прогоны одного кейса создают коррелированные наблюдения;
-- 14 синтетических кейсов не представляют все языки и репозитории.
+- 18 синтетических кейсов не представляют все языки и репозитории.
 
 Сильный результат требует независимых повторов, скрытого набора, human spot-check и, где возможно, executable verification.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Architecture Guard"
-  short_description: "Keep generated code simple and maintainable"
-  default_prompt: "Use $arch to review this change for reuse, architecture, dependency, and maintainability risks."
+  short_description: "Review code and map architecture with evidence"
+  default_prompt: "Use $arch to review this change and map the affected architecture with repository evidence when a diagram helps."

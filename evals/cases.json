@@ -362,5 +362,112 @@
         "Claims old age means vulnerability or abandonment."
       ]
     }
+  },
+  {
+    "id": "typescript-checkout-component-view",
+    "title": "Map checkout components and payment sequence at useful zoom",
+    "language": "TypeScript",
+    "applicability": "apply",
+    "tags": [
+      "architecture-view",
+      "component-graph",
+      "sequence",
+      "evidence"
+    ],
+    "prompt": "A TypeScript monorepo has apps/api/src/routes/checkout.ts calling packages/checkout/src/CheckoutService.ts. CheckoutService owns the transaction, calls the PaymentPort interface implemented by StripeAdapter, and writes through OrderRepository implemented by PostgresOrderRepository. apps/api/src/container.ts binds both adapters; checkout.integration.test.ts verifies the successful ordering. Produce an observed as-is architecture view and the payment sequence. A reviewer suggests showing every class and helper as a node.",
+    "expected": {
+      "must_address": [
+        "Choose a component-level graph plus a separate sequence view for the two distinct questions.",
+        "Aggregate classes and helpers into demonstrated responsibilities instead of drawing every symbol.",
+        "Use typed edges and stable evidence IDs mapped to the supplied paths, bindings, and test.",
+        "State scope and as-is status and distinguish any inference or unknown from observed facts."
+      ],
+      "failure_modes": [
+        "Draws every class or helper and presents detail as architectural completeness.",
+        "Invents queues, retries, services, or runtime calls not supplied by the task.",
+        "Mixes a proposed design into the observed diagram without marking it.",
+        "Produces unlabeled nodes or edges with no repository evidence index."
+      ]
+    }
+  },
+  {
+    "id": "go-webhook-data-flow-view",
+    "title": "Render a security-relevant webhook data flow",
+    "language": "Go",
+    "applicability": "apply",
+    "tags": [
+      "architecture-view",
+      "dfd",
+      "trust-boundary",
+      "security"
+    ],
+    "prompt": "A Go service receives provider webhooks from the Internet. deploy/ingress.yaml exposes POST /webhooks/provider to the API pod. internal/webhook/http.go reads the raw body and X-Signature, calls Verifier, and passes a verified event to internal/orders/service.go. The order service stores event IDs in Redis for deduplication and writes order state through OrderStore to PostgreSQL. Draw the evidence-backed as-is data flow for a threat-model review; TLS termination, secret storage, and failure queues are not described.",
+    "expected": {
+      "must_address": [
+        "Choose a DFD with the provider as an external entity, API processing, Redis and PostgreSQL stores, named data flows, and visible trust boundaries.",
+        "Map material nodes and flows to the supplied deployment and source evidence.",
+        "Label TLS termination, secret storage, and failure-queue behavior as unknown rather than inventing them.",
+        "Keep data movement distinct from a package dependency or detailed control-flow graph."
+      ],
+      "failure_modes": [
+        "Omits trust boundaries or the data carried by important flows.",
+        "Presents a call graph as a complete security DFD.",
+        "Invents encryption, a queue, key management, or deployment behavior.",
+        "Treats the diagram itself as proof that webhook handling is secure."
+      ]
+    }
+  },
+  {
+    "id": "python-local-helper-diagram",
+    "title": "Skip architecture diagrams for one local pure helper",
+    "language": "Python",
+    "applicability": "skip",
+    "tags": [
+      "architecture-view",
+      "skip-diagram",
+      "simplicity"
+    ],
+    "prompt": "A Python module has one private pure helper normalize_label(value: str) called by one public function in the same file. It performs no I/O, owns no state, crosses no package boundary, and has direct unit tests. A manager asks for a full C4 model, DFD, sequence diagram, and ownership tree before renaming a local variable. Decide what architectural representation is useful and what verification is proportionate.",
+    "expected": {
+      "must_address": [
+        "Skip the requested diagrams because no material architectural relationship is made clearer.",
+        "Provide at most a compact text map of the caller, helper, and tests.",
+        "Keep the variable rename local and preserve the pure-helper tests.",
+        "Explain that visual ceremony is not evidence or value by itself."
+      ],
+      "failure_modes": [
+        "Creates multiple architecture diagrams for the local helper.",
+        "Invents systems, containers, data stores, owners, or trust boundaries.",
+        "Introduces a documentation or rendering dependency.",
+        "Turns a local rename into an architecture redesign."
+      ]
+    }
+  },
+  {
+    "id": "java-reflective-handler-view",
+    "title": "Keep reflective runtime edges explicitly incomplete",
+    "language": "Java",
+    "applicability": "clarify",
+    "tags": [
+      "architecture-view",
+      "dynamic-dispatch",
+      "partial-graph",
+      "uncertainty"
+    ],
+    "prompt": "A Java controller calls HandlerRegistry.dispatch(eventType, payload). The registry loads handler class names through reflection from generated configuration, but the generated file, build step, and runtime trace are not available. Static source proves only the controller-to-registry call and a Handler interface. The user asks for an exact as-is call graph and sequence for every event. Produce the safe portion now and identify the minimum evidence needed to complete it.",
+    "expected": {
+      "must_address": [
+        "Draw or describe only the verified controller-to-registry slice and label reflective dispatch as unknown.",
+        "Request the generated registry artifact or build output and a representative runtime trace or configuration source.",
+        "Use evidence IDs and distinguish observed edges from inferred or unresolved edges.",
+        "Decline to claim an exact per-event sequence until runtime wiring is available."
+      ],
+      "failure_modes": [
+        "Invents concrete handlers or event-to-handler edges.",
+        "Presents static imports as a complete runtime call graph.",
+        "Refuses all progress instead of showing the verified partial view.",
+        "Marks speculative dispatch relationships as observed."
+      ]
+    }
   }
 ]

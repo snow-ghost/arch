@@ -39,7 +39,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertRegex(values["name"], r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
         self.assertLessEqual(len(values["name"]), 64)
         self.assertTrue(1 <= len(values["description"]) <= 1024)
-        for trigger in ("software", "deprecated", "regex", "Do not use"):
+        for trigger in ("software", "deprecated", "regex", "architecture maps", "Do not use"):
             self.assertIn(trigger, values["description"])
 
     def test_main_skill_is_compact_and_has_required_workflow(self) -> None:
@@ -48,6 +48,7 @@ class SkillContractTests(unittest.TestCase):
         required = (
             "## Establish authority and scope",
             "## Map before changing",
+            "## Render architecture views when useful",
             "## Apply the reuse ladder",
             "## Diagnose with evidence",
             "## Choose the smallest fitting design",
@@ -71,7 +72,14 @@ class SkillContractTests(unittest.TestCase):
                 self.assertTrue((SKILL_DIR / target).is_file())
 
     def test_references_cover_language_and_counterexample_routes(self) -> None:
-        tooling = (SKILL_DIR / "references" / "language-tooling.md").read_text("utf-8")
+        references = SKILL_DIR / "references"
+        for path in references.glob("*.md"):
+            text = path.read_text(encoding="utf-8")
+            if len(text.splitlines()) > 100:
+                with self.subTest(contents=path.name):
+                    self.assertIn("## Contents", text)
+
+        tooling = (references / "language-tooling.md").read_text("utf-8")
         for ecosystem in (
             "## Python",
             "## JavaScript and TypeScript",
@@ -87,12 +95,33 @@ class SkillContractTests(unittest.TestCase):
         for route in ("Intervene:", "Accept:", "Investigate:", "Reject:"):
             self.assertIn(route, examples)
 
+    def test_architecture_views_define_evidence_backed_zoom(self) -> None:
+        text = (SKILL_DIR / "references" / "architecture-views.md").read_text(
+            encoding="utf-8"
+        )
+        for marker in (
+            "sequenceDiagram",
+            "stateDiagram-v2",
+            "Data-flow diagram",
+            "IDEF0",
+            "Observed:",
+            "Inferred:",
+            "Proposed:",
+            "Unknown:",
+            "as-is",
+            "to-be",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, text)
+
     def test_sources_state_empirical_limits(self) -> None:
         text = (SKILL_DIR / "references" / "sources.md").read_text("utf-8")
         self.assertGreaterEqual(text.count("https://"), 20)
         self.assertIn("preprint", text.lower())
         self.assertIn("Limit", text)
         self.assertIn("Package hallucinations", text)
+        for source in ("c4model.com", "owasp.org", "mermaid.js.org", "nist.gov"):
+            self.assertIn(source, text.lower())
 
     def test_openai_metadata_has_explicit_invocation(self) -> None:
         text = (SKILL_DIR / "agents" / "openai.yaml").read_text(encoding="utf-8")
@@ -120,6 +149,8 @@ class PackagingTests(unittest.TestCase):
                 self.assertNotIn("hooks", document)
                 self.assertNotIn("mcpServers", document)
         self.assertEqual({document["version"] for document in documents}, {"0.1.0"})
+        self.assertEqual(len({document["description"] for document in documents}), 1)
+        self.assertIn("architecture", documents[0]["description"].lower())
 
     def test_repository_documents_supported_agents(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -145,6 +176,19 @@ class EvaluationContractTests(unittest.TestCase):
         languages = {case["language"] for case in self.cases}
         self.assertGreaterEqual(len(languages), 8)
 
+    def test_architecture_view_cases_cover_routes_and_notations(self) -> None:
+        view_cases = [
+            case for case in self.cases if "architecture-view" in case["tags"]
+        ]
+        self.assertEqual(len(view_cases), 4)
+        self.assertEqual(
+            {case["applicability"] for case in view_cases},
+            {"apply", "skip", "clarify"},
+        )
+        joined_tags = {tag for case in view_cases for tag in case["tags"]}
+        for tag in ("component-graph", "sequence", "dfd", "dynamic-dispatch"):
+            self.assertIn(tag, joined_tags)
+
     def test_cases_have_actionable_oracles(self) -> None:
         for case in self.cases:
             with self.subTest(case=case.get("id")):
@@ -168,6 +212,7 @@ class EvaluationContractTests(unittest.TestCase):
                 self.assertTrue((ROOT / relative).is_file())
         rubric = (ROOT / "evals" / "rubric.md").read_text(encoding="utf-8")
         self.assertIn("architecture_theater", rubric)
+        self.assertIn("architecture_view_accuracy", rubric)
         self.assertIn("Critical Errors", rubric)
 
 

@@ -2,6 +2,16 @@
 
 Metrics help locate review targets and compare a change with its baseline. They do not produce an objective cleanliness score.
 
+## Contents
+
+- [Principles](#principles)
+- [Useful signals](#useful-signals)
+- [Structural erosion indicator](#structural-erosion-indicator)
+- [Verbosity indicator](#verbosity-indicator)
+- [Recommended review table](#recommended-review-table)
+- [Quality gates](#quality-gates)
+- [Anti-gaming checks](#anti-gaming-checks)
+
 ## Principles
 
 - Prefer repository-local trends and before/after deltas.

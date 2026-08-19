@@ -2,6 +2,18 @@
 
 Use the repository's configured commands and versions first. The commands below are discovery options, not an instruction to add every tool. Confirm current syntax in official documentation before changing CI or dependencies.
 
+## Contents
+
+- [Cross-language pass](#cross-language-pass)
+- [Python](#python)
+- [JavaScript and TypeScript](#javascript-and-typescript)
+- [Go](#go)
+- [Rust](#rust)
+- [JVM: Java and Kotlin](#jvm-java-and-kotlin)
+- [.NET and C sharp](#net-and-c-sharp)
+- [C and C++](#c-and-c)
+- [Architecture-test selection](#architecture-test-selection)
+
 ## Cross-language pass
 
 For every ecosystem:

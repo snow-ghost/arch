@@ -2,7 +2,7 @@
 
 The harness measures whether the local arch skill improves architecture decisions over the same agent without the skill. It does not treat skill activation or longer answers as success.
 
-Version 0.1 includes the harness and cases. The first fully specified run found no aggregate quality lift; see [the 6 August 2026 report](../docs/benchmark-2026-08-06.md). Future claims still require a named model, command, sample size, judge, and run artifact.
+The current suite contains 18 cases. The first fully specified run used the original 14-case suite and found no aggregate quality lift; see [the 6 August 2026 report](../docs/benchmark-2026-08-06.md). The four architecture-view cases and the expanded rubric have not received a behavioral run. Future claims still require a named model, command, sample size, judge, and run artifact.
 
 ## What the cases test
 
@@ -16,6 +16,7 @@ The case set covers:
 - safe and unsafe regex use;
 - clone-detector and complexity false positives;
 - uncertainty that requires investigation before change;
+- component and sequence views, security DFDs, unnecessary-diagram rejection, and unresolved dynamic edges;
 - Python, JavaScript or TypeScript, Go, Rust, Java, Kotlin, .NET, and C++ contexts.
 
 Routes are balanced across:
@@ -23,6 +24,8 @@ Routes are balanced across:
 - **apply:** evidence supports an intervention;
 - **skip:** the suspicious construct is the fitting design;
 - **clarify:** supplied evidence is insufficient for a safe decision.
+
+The current distribution is 8 apply, 5 skip, and 5 clarify cases.
 
 ## Generate a dry run
 
@@ -68,6 +71,8 @@ The command randomizes baseline and arch as A or B for every pair, writes anonym
 - blind/key.json, which must remain hidden from the judge;
 - blind/judgments-template.json;
 - blind/pairs/PAIR_ID/judge-prompt.md.
+
+The rubric scores eight dimensions from 0 to 2, including architecture-view accuracy. It penalizes unnecessary diagrams, false visual precision, and inferred relationships presented as observed.
 
 Run an automated judge whose command reads stdin and returns the required JSON object. Runner options must precede blind_dir:
 
